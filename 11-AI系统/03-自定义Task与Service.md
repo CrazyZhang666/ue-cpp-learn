@@ -477,12 +477,12 @@ void UBTTask_ChaseTarget::TickTask(
 
 ### 1.5 ExecuteTask返回结果速查表
 
-| 返回结果 | 含义 | 后续行为 | 典型场景 |
-|---------|------|---------|---------|
-| `Succeeded` | 任务即时完成 | Composite继续执行下一个子节点 | "检查弹药数>0" |
-| `Failed` | 任务即时失败 | 如果是Sequence，整条Sequence失败 | "目标已死亡" |
+| 返回结果     | 含义           | 后续行为                                | 典型场景              |
+| ------------ | -------------- | --------------------------------------- | --------------------- |
+| `Succeeded`  | 任务即时完成   | Composite继续执行下一个子节点           | "检查弹药数>0"        |
+| `Failed`     | 任务即时失败   | 如果是Sequence，整条Sequence失败        | "目标已死亡"          |
 | `InProgress` | 任务还在进行中 | 每帧调用TickTask，直到调用FinishExecute | "追击目标"、"等待N秒" |
-| `Aborted` | 任务被中断 | OnTaskFinished被调用 | 更高优先级节点打断 |
+| `Aborted`    | 任务被中断     | OnTaskFinished被调用                    | 更高优先级节点打断    |
 
 ---
 
@@ -989,13 +989,13 @@ FString UBTDecorator_IsInRange::GetStaticDescription() const
 
 ### 4.1 三个自定义类的快速对比
 
-| 维度 | BTTask | BTService | BTDecorator |
-|------|--------|-----------|-------------|
-| **作用** | 执行行为 | 更新数据 | 判断条件 |
-| **核心覆写** | `ExecuteTask` | `TickNode` | `CalculateRawConditionValue` |
-| **返回值** | `EBTNodeResult` | 无返回值 | `bool` |
-| **执行频率** | 一次（或InProgress时每帧） | 按Interval间隔 | 按配置的检查时机 |
-| **类比** | 工人（干活） | 侦察兵（汇报） | 门卫（检查） |
+| 维度         | BTTask                     | BTService      | BTDecorator                  |
+| ------------ | -------------------------- | -------------- | ---------------------------- |
+| **作用**     | 执行行为                   | 更新数据       | 判断条件                     |
+| **核心覆写** | `ExecuteTask`              | `TickNode`     | `CalculateRawConditionValue` |
+| **返回值**   | `EBTNodeResult`            | 无返回值       | `bool`                       |
+| **执行频率** | 一次（或InProgress时每帧） | 按Interval间隔 | 按配置的检查时机             |
+| **类比**     | 工人（干活）               | 侦察兵（汇报） | 门卫（检查）                 |
 
 ### 4.2 FBlackboardKeySelector 详解
 
@@ -1076,15 +1076,15 @@ Mem->ElapsedTime += DeltaSeconds;
 
 ## ❌ 常见误区
 
-| 误区 | 为什么错 | ✅ 正确做法 |
-|------|---------|------------|
-| 忘记设置`bNotifyTick = true` | TickTask永远不会被调用 | 在构造函数里设置它 |
-| 在ExecuteTask中做耗时操作（加载资源等） | 阻塞游戏主线程 | 耗时操作必须在异步执行 |
-| 在TickNode中每帧做`FindAllActorsOfClass` | 每帧扫描全场景，性能极差 | 用AIPerception或缓存引用 |
-| `FinishExecute`忘记调用 | Task永远停在InProgress，行为树卡死 | 确保所有代码路径都会终止Task |
-| Service的Interval设为0 | 等同于每帧Tick，与许多Service实例叠加造成性能问题 | 根据需求设合理的间隔（0.1~1.0秒） |
-| Decorator中做复杂计算 | 如果每帧都检查，复杂计算会拖慢性能 | 保持Decorator逻辑简单，或降低检查频率 |
-| FBlackboardKeySelector不设Filter | 编辑器中所有类型Key全显示，策划容易选错 | 在构造函数中设置合适的Filter |
+| 误区                                     | 为什么错                                          | ✅ 正确做法                           |
+| ---------------------------------------- | ------------------------------------------------- | ------------------------------------- |
+| 忘记设置`bNotifyTick = true`             | TickTask永远不会被调用                            | 在构造函数里设置它                    |
+| 在ExecuteTask中做耗时操作（加载资源等）  | 阻塞游戏主线程                                    | 耗时操作必须在异步执行                |
+| 在TickNode中每帧做`FindAllActorsOfClass` | 每帧扫描全场景，性能极差                          | 用AIPerception或缓存引用              |
+| `FinishExecute`忘记调用                  | Task永远停在InProgress，行为树卡死                | 确保所有代码路径都会终止Task          |
+| Service的Interval设为0                   | 等同于每帧Tick，与许多Service实例叠加造成性能问题 | 根据需求设合理的间隔（0.1~1.0秒）     |
+| Decorator中做复杂计算                    | 如果每帧都检查，复杂计算会拖慢性能                | 保持Decorator逻辑简单，或降低检查频率 |
+| FBlackboardKeySelector不设Filter         | 编辑器中所有类型Key全显示，策划容易选错           | 在构造函数中设置合适的Filter          |
 
 ---
 

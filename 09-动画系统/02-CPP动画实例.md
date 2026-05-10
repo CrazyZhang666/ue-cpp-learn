@@ -9,6 +9,7 @@
 回顾上一节的分工原则：**数据计算在C++，动画选择在蓝图**。这一节我们专门攻克"数据计算"的部分。
 
 核心优势：
+
 - 访问C++角色类成员无需Cast（类型转换）
 - 复杂数学运算（向量、旋转、插值）在C++中更快
 - 可以在Tick中高效地每帧更新参数
@@ -243,14 +244,14 @@ float Speed;
 
 ### 修饰符速查
 
-| 修饰符 | 含义 | 动画参数用哪个 |
-|--------|------|---------------|
-| `BlueprintReadOnly` | 蓝图可读，不能改 | ✅ 推荐，动画蓝图只需读参数 |
-| `BlueprintReadWrite` | 蓝图可读写 | ⚠️ 谨慎使用，避免蓝图改C++计算值 |
-| `Category = "xxx"` | 在蓝图中的分类名 | ✅ 按功能分组，方便查找 |
-| `Transient` | 不序列化（不保存到存档） | ✅ 动画参数每帧计算，无需保存 |
-| `VisibleAnywhere` | 编辑器中可见但不可编辑 | 调试时有用，可以看到当前值 |
-| `EditAnywhere` | 编辑器可编辑 | ❌ 动画参数不应手动编辑 |
+| 修饰符               | 含义                     | 动画参数用哪个                   |
+| -------------------- | ------------------------ | -------------------------------- |
+| `BlueprintReadOnly`  | 蓝图可读，不能改         | ✅ 推荐，动画蓝图只需读参数      |
+| `BlueprintReadWrite` | 蓝图可读写               | ⚠️ 谨慎使用，避免蓝图改C++计算值 |
+| `Category = "xxx"`   | 在蓝图中的分类名         | ✅ 按功能分组，方便查找          |
+| `Transient`          | 不序列化（不保存到存档） | ✅ 动画参数每帧计算，无需保存    |
+| `VisibleAnywhere`    | 编辑器中可见但不可编辑   | 调试时有用，可以看到当前值       |
+| `EditAnywhere`       | 编辑器可编辑             | ❌ 动画参数不应手动编辑          |
 
 ---
 
@@ -267,6 +268,7 @@ APawn* TryGetPawnOwner() const;
 ### 为什么叫 Try
 
 `Try` 意味着"尝试"——它可能返回 `nullptr`。在以下场景它返回空：
+
 - 动画蓝图在编辑器中预览时（没有真实的游戏角色）
 - 角色正在被销毁
 - 骨骼网格体尚未初始化完成
@@ -284,10 +286,10 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
     APawn* OwnerPawn = TryGetPawnOwner();
     if (!OwnerPawn) return;  // 安全第一，没有角色就直接返回
-    
+
     ACharacter* OwnerCharacter = Cast<ACharacter>(OwnerPawn);
     if (!OwnerCharacter) return;  // 双重保险
-    
+
     // 到现在OwnerCharacter一定有效，放心使用
     Speed = OwnerCharacter->GetVelocity().Size2D();
 }
@@ -379,11 +381,11 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
     // GetCurveValue 的参数是曲线名称（和动画资源中定义的名称一致）
     // 返回当前播放动画在该时间点的曲线值，如果没有该曲线则返回0
-    
+
     // 示例1：读取"脚落地"曲线
     float FootIKCurve = GetCurveValue(FName("FootIK"));
     // 当值为1.0时，表示脚正好踩在地上
-    
+
     // 示例2：读取"速度修正"曲线
     float SpeedModifier = GetCurveValue(FName("SpeedMod"));
     // 可以用来在动画播放期间动态调整移动速度
@@ -392,13 +394,13 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 ### 动画曲线的用途
 
-| 用途 | 曲线名（示例） | 说明 |
-|------|---------------|------|
-| 脚步检测 | FootStep_L, FootStep_R | 值为1时播放脚步音效 |
-| IK控制 | FootIK_L, FootIK_R | 控制IK权重 |
-| 速度调整 | SpeedMod | 动画驱动角色速度 |
-| 伤害窗口 | DamageWindow | 值为1时武器可以造成伤害 |
-| 材质变化 | EmissivePower | 控制发光材质亮度 |
+| 用途     | 曲线名（示例）         | 说明                    |
+| -------- | ---------------------- | ----------------------- |
+| 脚步检测 | FootStep_L, FootStep_R | 值为1时播放脚步音效     |
+| IK控制   | FootIK_L, FootIK_R     | 控制IK权重              |
+| 速度调整 | SpeedMod               | 动画驱动角色速度        |
+| 伤害窗口 | DamageWindow           | 值为1时武器可以造成伤害 |
+| 材质变化 | EmissivePower          | 控制发光材质亮度        |
 
 ---
 

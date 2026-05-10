@@ -5,6 +5,7 @@
 ---
 
 ## 目录
+
 1. [UMG是什么](#1-umg是什么)
 2. [UserWidget的概念](#2-userwidget的概念)
 3. [编辑器中创建Widget Blueprint](#3-编辑器中创建widget-blueprint)
@@ -22,12 +23,12 @@
 
 **UMG（Unreal Motion Graphics）** 是虚幻引擎提供的UI制作系统。你可以把它理解为一个"UI编辑器"，让你能够像搭积木一样创建游戏中的各种界面。
 
-| 概念 | 类比生活中的东西 |
-|------|------------------|
-| UMG | 整个UI制作工具，就像Photoshop用来做图 |
-| Widget Blueprint | 一个具体的UI界面，就像一张画布 |
-| Widget控件 | 画布上的元素，就像画笔和颜料 |
-| CanvasPanel | 画布本身，用来放置其他元素 |
+| 概念             | 类比生活中的东西                      |
+| ---------------- | ------------------------------------- |
+| UMG              | 整个UI制作工具，就像Photoshop用来做图 |
+| Widget Blueprint | 一个具体的UI界面，就像一张画布        |
+| Widget控件       | 画布上的元素，就像画笔和颜料          |
+| CanvasPanel      | 画布本身，用来放置其他元素            |
 
 ### 1.2 UMG能做什么
 
@@ -55,16 +56,17 @@
 
 ### 1.4 关键术语对照表
 
-| 英文术语 | 中文释义 | 说明 |
-|----------|----------|------|
-| Widget | 控件/部件 | UI的基本组成单元 |
-| Panel | 面板/容器 | 用来装其他控件的控件 |
-| Blueprint | 蓝图 | UE的可视化脚本系统 |
-| UMG | 虚幻运动图形 | UE的UI制作系统 |
-| HUD | 抬头显示 | 游戏进行中显示的界面 |
-| Canvas | 画布 | 自由布局的容器 |
+| 英文术语  | 中文释义     | 说明                 |
+| --------- | ------------ | -------------------- |
+| Widget    | 控件/部件    | UI的基本组成单元     |
+| Panel     | 面板/容器    | 用来装其他控件的控件 |
+| Blueprint | 蓝图         | UE的可视化脚本系统   |
+| UMG       | 虚幻运动图形 | UE的UI制作系统       |
+| HUD       | 抬头显示     | 游戏进行中显示的界面 |
+| Canvas    | 画布         | 自由布局的容器       |
 
 ✅ **检查清单 - 1.1~1.4：**
+
 - [ ] 能用自己的话说出UMG是什么
 - [ ] 知道UMG和Slate的关系
 - [ ] 能在脑海中想象UMG/Slate/渲染系统的层次结构
@@ -128,6 +130,7 @@
 ```
 
 ✅ **检查清单 - 2.1~2.4：**
+
 - [ ] 知道UserWidget是所有UI类的基类
 - [ ] 能说出UserWidget生命周期的5个关键函数
 - [ ] 理解"每个界面都是一个UserWidget"
@@ -198,12 +201,12 @@
 
 **四个主要面板：**
 
-| 面板名称 | 位置 | 作用 |
-|----------|------|------|
-| Palette（控件面板） | 左侧 | 列出所有可拖拽的控件，就像工具箱 |
-| 设计器视图 | 中间 | 可视化的界面设计区域，所见即所得 |
-| Details（细节面板） | 右侧 | 调整选中控件的具体属性 |
-| Hierarchy（层级面板） | 下方 | 显示控件的树形层级关系 |
+| 面板名称              | 位置 | 作用                             |
+| --------------------- | ---- | -------------------------------- |
+| Palette（控件面板）   | 左侧 | 列出所有可拖拽的控件，就像工具箱 |
+| 设计器视图            | 中间 | 可视化的界面设计区域，所见即所得 |
+| Details（细节面板）   | 右侧 | 调整选中控件的具体属性           |
+| Hierarchy（层级面板） | 下方 | 显示控件的树形层级关系           |
 
 ### 3.3 往界面上添加控件
 
@@ -227,6 +230,7 @@
 - **精确调整：** 在Details面板中修改Position和Size数值
 
 ✅ **检查清单 - 3.1~3.4：**
+
 - [ ] 成功创建了一个Widget Blueprint
 - [ ] 知道Palette、设计器、Details、Hierarchy四个面板的位置
 - [ ] 能拖拽一个TextBlock到界面上
@@ -257,16 +261,19 @@
 ```
 
 **特点：**
+
 - 子控件通过绝对位置定位（X, Y坐标）
 - 也可以使用锚点进行相对定位
 - 最灵活，但也最容易在分辨率变化时出问题
 
 **使用场景：**
+
 - 需要精确控制每个元素位置时
 - 游戏HUD（小地图在右上角，血量在左下角等）
 - Widget Blueprint的默认根容器就是CanvasPanel
 
 **在C++中使用：**
+
 ```cpp
 // 在C++中创建CanvasPanel
 UCanvasPanel* MyCanvas = NewObject<UCanvasPanel>(this);
@@ -294,16 +301,19 @@ if (Slot)
 ```
 
 **特点：**
+
 - 子控件自动从左到右排列
 - 可以设置每个子控件的大小比例
 - 自动处理间距和对齐
 
 **使用场景：**
+
 - 技能栏（一排技能图标）
 - 顶部菜单栏
 - 工具栏按钮组
 
 **在C++中使用：**
+
 ```cpp
 // 在C++中创建HorizontalBox
 UHorizontalBox* HBox = NewObject<UHorizontalBox>(this);
@@ -335,17 +345,20 @@ if (Slot)
 ```
 
 **特点：**
+
 - 子控件自动从上到下排列
 - 可以设置每个子控件的大小比例
 - 自动处理间距和对齐
 
 **使用场景：**
+
 - 任务列表
 - 聊天消息列表
 - 设置菜单项列表
 - 背包物品列表
 
 **在C++中使用：**
+
 ```cpp
 // 在C++中创建VerticalBox
 UVerticalBox* VBox = NewObject<UVerticalBox>(this);
@@ -377,17 +390,20 @@ if (Slot)
 ```
 
 **特点：**
+
 - 所有子控件占据相同的空间
 - 后面的控件覆盖在前面的控件之上
 - 适合做层叠效果
 
 **使用场景：**
+
 - 在图片上叠加文字
 - 制作进度条（背景 + 填充 + 文字）
 - 制作按钮（背景图 + 文字）
 - 在角色头顶显示血条和名字
 
 **在C++中使用：**
+
 ```cpp
 // 在C++中创建Overlay
 UOverlay* MyOverlay = NewObject<UOverlay>(this);
@@ -417,6 +433,7 @@ if (Slot)
 ```
 
 **使用场景：**
+
 - 背包网格（自动排列物品图标）
 - 标签列表
 - 技能图标排列
@@ -437,6 +454,7 @@ if (Slot)
 ```
 
 **使用场景：**
+
 - 背包物品列表（物品太多时）
 - 设置界面（选项太多时）
 - 聊天记录
@@ -462,23 +480,25 @@ if (Slot)
 - **UniformGridPanel：** 所有格子大小一致
 
 **使用场景：**
+
 - 背包界面（规律排列的物品图标）
 - 技能树界面
 - 棋盘游戏界面
 
 ### 4.8 容器选择建议
 
-| 需求 | 推荐容器 |
-|------|----------|
-| 自由放置元素（精确位置） | CanvasPanel |
-| 水平排列元素 | HorizontalBox |
-| 垂直排列元素 | VerticalBox |
-| 元素要叠在一起 | Overlay |
-| 自动换行排列 | WrapBox |
-| 内容太多需要滚动 | ScrollBox |
-| 网格/表格排列 | GridPanel / UniformGridPanel |
+| 需求                     | 推荐容器                     |
+| ------------------------ | ---------------------------- |
+| 自由放置元素（精确位置） | CanvasPanel                  |
+| 水平排列元素             | HorizontalBox                |
+| 垂直排列元素             | VerticalBox                  |
+| 元素要叠在一起           | Overlay                      |
+| 自动换行排列             | WrapBox                      |
+| 内容太多需要滚动         | ScrollBox                    |
+| 网格/表格排列            | GridPanel / UniformGridPanel |
 
 ✅ **检查清单 - 4.1~4.8：**
+
 - [ ] 能说出每种容器的主要特点和适用场景
 - [ ] 理解CanvasPanel = 自由画布
 - [ ] 理解HorizontalBox = 左到右，VerticalBox = 上到下
@@ -502,11 +522,13 @@ if (Slot)
 ```
 
 **核心属性：**
+
 - `Style` — 按钮的视觉样式（普通、悬停、按下、禁用四种状态）
 - `IsEnabled` — 是否可点击
 - `OnClicked` — 点击事件（最重要！在这里写点击后的逻辑）
 
 **常用操作：**
+
 ```
 1. 设置按钮文字：在Button下面放一个TextBlock子控件
 2. 设置按钮样式：在Details面板 → Appearance → Style
@@ -514,6 +536,7 @@ if (Slot)
 ```
 
 **正确做法：**
+
 ```
 ✅ Button的子控件通常是一个Overlay包裹的TextBlock或Image
 ✅ 一定要处理OnClicked事件，空按钮没有意义
@@ -521,6 +544,7 @@ if (Slot)
 ```
 
 **错误做法：**
+
 ```
 ❌ Button放在ScrollBox中但不设置IsFocusable，可能导致滚动误触
 ❌ 按钮太小（<32x32像素），手机/触屏用户点不到
@@ -539,16 +563,17 @@ if (Slot)
 
 **核心属性：**
 
-| 属性 | 作用 | 示例 |
-|------|------|------|
-| `Text` | 显示的文字内容 | "玩家名称：小明" |
-| `Font` | 字体设置（字体、大小、样式） | Size: 24, 粗体 |
-| `Color and Opacity` | 文字颜色和透明度 | 红色、半透明 |
-| `Justification` | 文字对齐方式 | 居中、左对齐 |
-| `Auto Wrap Text` | 是否自动换行 | true/false |
-| `Shadow Offset/Color` | 文字阴影 | 偏移(1,1) 黑色 |
+| 属性                  | 作用                         | 示例             |
+| --------------------- | ---------------------------- | ---------------- |
+| `Text`                | 显示的文字内容               | "玩家名称：小明" |
+| `Font`                | 字体设置（字体、大小、样式） | Size: 24, 粗体   |
+| `Color and Opacity`   | 文字颜色和透明度             | 红色、半透明     |
+| `Justification`       | 文字对齐方式                 | 居中、左对齐     |
+| `Auto Wrap Text`      | 是否自动换行                 | true/false       |
+| `Shadow Offset/Color` | 文字阴影                     | 偏移(1,1) 黑色   |
 
 **代码中更新文字：**
+
 ```cpp
 // C++中动态更新TextBlock的文字
 MyTextBlock->SetText(FText::FromString(TEXT("消灭敌人: 5/10")));
@@ -574,13 +599,14 @@ MyTextBlock->SetText(FText::Format(
 
 **核心属性：**
 
-| 属性 | 作用 |
-|------|------|
-| `Brush` | 设置图片资源（Texture） |
-| `Color and Opacity` | 图片颜色叠加和透明度 |
-| `Brush Size` | 图片的绘制大小 |
+| 属性                | 作用                    |
+| ------------------- | ----------------------- |
+| `Brush`             | 设置图片资源（Texture） |
+| `Color and Opacity` | 图片颜色叠加和透明度    |
+| `Brush Size`        | 图片的绘制大小          |
 
 **代码中设置图片：**
+
 ```cpp
 // C++中动态更换图片
 // 1. 加载纹理资源
@@ -597,6 +623,7 @@ if (MyTexture && MyImage)
 ```
 
 **常见错误：**
+
 ```
 ✅ Image的Texture参数需要是导入的纹理资源
 ❌ 直接给Image一个Material会显示异常（Image期望Texture，不是Material）
@@ -616,14 +643,15 @@ if (MyTexture && MyImage)
 
 **核心属性：**
 
-| 属性 | 作用 |
-|------|------|
-| `Percent` | 当前进度值（0.0 ~ 1.0） |
-| `Bar Fill Type` | 填充方向（左到右、右到左、上到下、下到上） |
-| `Fill Color and Opacity` | 填充部分的颜色 |
-| `Bar Fill Style` | 填充区域的样式图片 |
+| 属性                     | 作用                                       |
+| ------------------------ | ------------------------------------------ |
+| `Percent`                | 当前进度值（0.0 ~ 1.0）                    |
+| `Bar Fill Type`          | 填充方向（左到右、右到左、上到下、下到上） |
+| `Fill Color and Opacity` | 填充部分的颜色                             |
+| `Bar Fill Style`         | 填充区域的样式图片                         |
 
 **代码中更新进度：**
+
 ```cpp
 // C++中更新血条进度（血量百分比 0.0 ~ 1.0）
 float HealthPercent = CurrentHealth / MaxHealth; // 计算血量百分比
@@ -645,15 +673,16 @@ HealthBar->SetPercent(FMath::Clamp(HealthPercent, 0.0f, 1.0f));
 
 **核心属性：**
 
-| 属性 | 作用 |
-|------|------|
-| `Min Value` | 最小值 |
-| `Max Value` | 最大值 |
-| `Step Size` | 步长（每一步的增量，0表示连续） |
-| `Value` | 当前值 |
-| `OnValueChanged` | 值改变时触发的事件 |
+| 属性             | 作用                            |
+| ---------------- | ------------------------------- |
+| `Min Value`      | 最小值                          |
+| `Max Value`      | 最大值                          |
+| `Step Size`      | 步长（每一步的增量，0表示连续） |
+| `Value`          | 当前值                          |
+| `OnValueChanged` | 值改变时触发的事件              |
 
 **在C++中绑定Slider事件：**
+
 ```cpp
 // C++中绑定Slider值改变的事件
 MySlider->OnValueChanged.AddDynamic(this, &UMyWidget::OnVolumeChanged);
@@ -680,6 +709,7 @@ void UMyWidget::OnVolumeChanged(float NewValue)
 - `EditableTextBox` — 带背景框的文本输入框（更常用）
 
 **使用场景：**
+
 - 输入玩家名字
 - 输入聊天消息
 - 输入IP地址（联机时）
@@ -695,6 +725,7 @@ void UMyWidget::OnVolumeChanged(float NewValue)
 ```
 
 **常用属性/事件：**
+
 - `IsChecked` — 当前是否勾选
 - `OnCheckStateChanged` — 勾选状态改变时触发
 
@@ -713,6 +744,7 @@ void UMyWidget::OnVolumeChanged(float NewValue)
 ```
 
 **使用场景：**
+
 - 分辨率选择
 - 画质档位选择
 - 服务器选择
@@ -720,19 +752,20 @@ void UMyWidget::OnVolumeChanged(float NewValue)
 
 ### 5.9 控件选择速查表
 
-| 你想实现的效果 | 用什么控件 |
-|---------------|------------|
-| 显示一段文字 | TextBlock |
-| 显示一张图片 | Image |
-| 让玩家点击 | Button |
-| 显示进度（血条、经验） | ProgressBar |
-| 让玩家调节数值 | Slider |
-| 让玩家输入文字 | EditableTextBox |
-| 勾选/开关选项 | CheckBox |
-| 下拉选择 | ComboBox |
-| 显示长文字（可滚动） | ScrollBox + TextBlock |
+| 你想实现的效果         | 用什么控件            |
+| ---------------------- | --------------------- |
+| 显示一段文字           | TextBlock             |
+| 显示一张图片           | Image                 |
+| 让玩家点击             | Button                |
+| 显示进度（血条、经验） | ProgressBar           |
+| 让玩家调节数值         | Slider                |
+| 让玩家输入文字         | EditableTextBox       |
+| 勾选/开关选项          | CheckBox              |
+| 下拉选择               | ComboBox              |
+| 显示长文字（可滚动）   | ScrollBox + TextBlock |
 
 ✅ **检查清单 - 5.1~5.9：**
+
 - [ ] 能在编辑器中创建Button、TextBlock、Image、ProgressBar、Slider
 - [ ] 知道每个控件的核心属性和作用
 - [ ] 理解ProgressBar的Percent范围是0.0~1.0
@@ -763,10 +796,12 @@ void UMyWidget::OnVolumeChanged(float NewValue)
 锚点同时控制两件事：
 
 **作用1：位置锁定**
+
 - 控件相对于父容器的哪个点保持固定距离
 - 例如：锚点设为右上角 → 控件始终在右上角
 
 **作用2：大小伸缩**
+
 - 当父容器大小改变时，控件如何跟着缩放
 - 例如：锚点设为上下拉伸 → 控件高度随父容器变化
 
@@ -774,15 +809,15 @@ void UMyWidget::OnVolumeChanged(float NewValue)
 
 在编辑器中选择控件后，可以在Details面板的Anchors下拉菜单中看到这些预设：
 
-| 预设 | 图示 | 行为 | 典型用途 |
-|------|------|------|----------|
-| 左上角固定 | ●⬜⬜ | 固定在左上角，大小不变 | Logo图标 |
-| 右上角固定 | ⬜⬜● | 固定在右上角，大小不变 | 小地图、关闭按钮 |
-| 居中固定 | ⬜●⬜ | 固定在屏幕中央，大小不变 | 暂停菜单 |
-| 水平拉伸（顶） | ●⬜→● | 固定顶部，左右拉伸 | 顶部状态栏 |
-| 水平拉伸（底） | ●⬜→● | 固定底部，左右拉伸 | 底部技能栏 |
-| 全屏拉伸 | ●→●→● | 四角和四边都拉伸 | 全屏背景图 |
-| 比例定位 | 自定义 | 按百分比定位和缩放 | 精确响应式布局 |
+| 预设           | 图示   | 行为                     | 典型用途         |
+| -------------- | ------ | ------------------------ | ---------------- |
+| 左上角固定     | ●⬜⬜  | 固定在左上角，大小不变   | Logo图标         |
+| 右上角固定     | ⬜⬜●  | 固定在右上角，大小不变   | 小地图、关闭按钮 |
+| 居中固定       | ⬜●⬜  | 固定在屏幕中央，大小不变 | 暂停菜单         |
+| 水平拉伸（顶） | ●⬜→●  | 固定顶部，左右拉伸       | 顶部状态栏       |
+| 水平拉伸（底） | ●⬜→●  | 固定底部，左右拉伸       | 底部技能栏       |
+| 全屏拉伸       | ●→●→●  | 四角和四边都拉伸         | 全屏背景图       |
+| 比例定位       | 自定义 | 按百分比定位和缩放       | 精确响应式布局   |
 
 ### 6.4 直观理解锚点
 
@@ -814,6 +849,7 @@ Anchors:
 ```
 
 **示例1：固定在左上角，大小不变**
+
 ```
 Minimum: (0.0, 0.0)
 Maximum: (0.0, 0.0)
@@ -821,6 +857,7 @@ Maximum: (0.0, 0.0)
 ```
 
 **示例2：横向拉伸，纵向固定**
+
 ```
 Minimum: (0.0, 0.0)
 Maximum: (1.0, 0.0)
@@ -838,6 +875,7 @@ Maximum: (1.0, 0.0)
 ```
 
 ✅ **检查清单 - 6.1~6.6：**
+
 - [ ] 理解锚点的两个作用：位置 + 大小
 - [ ] 知道常用锚点预设（左上、居中、右上、拉伸等）
 - [ ] 能在编辑器中设置和修改控件的锚点
@@ -875,6 +913,7 @@ Maximum: (1.0, 0.0)
 **在Hierarchy面板中调整：**
 
 在Hierarchy面板中，列表从上到下的顺序就是ZOrder从大到小的顺序：
+
 - 列表顶部的控件 → ZOrder最大 → 显示在最前面
 - 列表底部的控件 → ZOrder最小 → 显示在最后面
 
@@ -914,6 +953,7 @@ if (Slot)
 ```
 
 ✅ **检查清单 - 7.1~7.5：**
+
 - [ ] 理解ZOrder大 = 显示在前面
 - [ ] 知道如何在编辑器和代码中设置ZOrder
 - [ ] 能用Hierarchy面板调整控件顺序
@@ -970,6 +1010,7 @@ DPI Scale Rule: Shortest Side
 ### 8.4 DPI对实际开发的影响
 
 **UI素材准备：**
+
 ```
 ✅ UI图片素材建议以1080p为基准分辨率制作
 ✅ 矢量图形比位图更适合做UI（缩放不失真）
@@ -978,6 +1019,7 @@ DPI Scale Rule: Shortest Side
 ```
 
 **字体处理：**
+
 ```
 ✅ 选择合适的字号（有意识考虑不同屏幕）
 ✅ 使用TextBlock的Auto Wrap功能适应不同宽度
@@ -985,6 +1027,7 @@ DPI Scale Rule: Shortest Side
 ```
 
 **代码中处理DPI：**
+
 ```cpp
 // 获取当前的DPI缩放比例
 float DPIScale = GetGameInstance()
@@ -1013,6 +1056,7 @@ float AdjustedSize = BaseSize * DPIScale;
 ```
 
 ✅ **检查清单 - 8.1~8.5：**
+
 - [ ] 理解为什么需要DPI缩放
 - [ ] 知道项目设置中的DPI Scale Rule选项
 - [ ] 了解Shortest Side策略的含义

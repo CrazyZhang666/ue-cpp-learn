@@ -81,6 +81,7 @@ public class MyGame : ModuleRules
 ```
 
 > **经验法则**：
+>
 > - `.h` 文件中：尽量使用前向声明 `class UInputAction;`，避免头文件膨胀
 > - `.cpp` 文件中：才 `#include "EnhancedInputComponent.h"` 等实际头文件
 
@@ -423,19 +424,19 @@ void AMyCharacter::BeginPlay()
 
 ### 4.3 选择指南
 
-| 动作类型 | 选择的事件 | 原因 |
-|----------|-----------|------|
-| 移动（WASD按住走路） | `Triggered` | 需要持续获取输入值 |
-| 视角（鼠标移动） | `Triggered` | 鼠标每帧都在动 |
-| 跳跃（按下跳） | `Started` | 只需要触发一次 |
-| 跳跃（松开时停止） | `Completed` | 可选的功能 |
-| 冲刺（按住跑） | `Started` + `Completed` | 开始冲刺和停止冲刺 |
-| 蹲伏（切换） | `Started` | 按一次切换 |
-| 开火（单发） | `Started` | 点一下射一发 |
-| 开火（连射） | `Started` + `Triggered` | 按住所住持续开火 |
-| 交互（E键） | `Started` | 按一下互动 |
-| 蓄力攻击（按住蓄力） | `Started` + `Completed` | 开始蓄力 + 松开发射 |
-| 清理状态（防止卡按键） | `Canceled` | 安全兜底 |
+| 动作类型               | 选择的事件              | 原因                |
+| ---------------------- | ----------------------- | ------------------- |
+| 移动（WASD按住走路）   | `Triggered`             | 需要持续获取输入值  |
+| 视角（鼠标移动）       | `Triggered`             | 鼠标每帧都在动      |
+| 跳跃（按下跳）         | `Started`               | 只需要触发一次      |
+| 跳跃（松开时停止）     | `Completed`             | 可选的功能          |
+| 冲刺（按住跑）         | `Started` + `Completed` | 开始冲刺和停止冲刺  |
+| 蹲伏（切换）           | `Started`               | 按一次切换          |
+| 开火（单发）           | `Started`               | 点一下射一发        |
+| 开火（连射）           | `Started` + `Triggered` | 按住所住持续开火    |
+| 交互（E键）            | `Started`               | 按一下互动          |
+| 蓄力攻击（按住蓄力）   | `Started` + `Completed` | 开始蓄力 + 松开发射 |
+| 清理状态（防止卡按键） | `Canceled`              | 安全兜底            |
 
 ### 4.4 Canceled 的重要性
 
@@ -519,21 +520,21 @@ void AMyCharacter::SomeCallback(const FInputActionValue& Value)
 {
     // FInputActionValue 是一个"类型安全的输入值包装"
     // 通过 ValueType 存储不同类型的值
-    
+
     // ===== 提取 Bool =====
     bool bPressed = Value.Get<bool>();
     // 适用场景：跳跃、冲刺、交互、开火等开关型动作
-    
+
     // ===== 提取 float（Axis1D）=====
     float AxisValue = Value.Get<float>();
     // 适用场景：油门、刹车、滚轮缩放
-    
+
     // ===== 提取 FVector2D（Axis2D）=====
     FVector2D Vec2 = Value.Get<FVector2D>();
     float X = Vec2.X;   // 左右分量
     float Y = Vec2.Y;   // 前后分量
     // 适用场景：移动方向、鼠标视角
-    
+
     // ===== 提取 FVector（Axis3D）=====
     FVector Vec3 = Value.Get<FVector>();
     // 适用场景：飞行模拟（几乎很少用到）
@@ -560,7 +561,7 @@ void AMyCharacter::OnMove(const FInputActionValue& Value)
         // GetControlRotation(): 获取Control的完整旋转（Pitch, Yaw, Roll）
         // FRotator: 包含 Pitch（俯仰）, Yaw（偏航）, Roll（翻滚）
         FRotator ControlRotation = GetController()->GetControlRotation();
-        
+
         // 我们只关心水平面的方向（Yaw），忽略上下（Pitch）
         // 因为角色是在地面上水平移动的（不考虑飞行）
         FRotator YawRotation(0.0f,                    // Pitch = 0
@@ -571,7 +572,7 @@ void AMyCharacter::OnMove(const FInputActionValue& Value)
         // FRotationMatrix: 把旋转矩阵化，方便取方向向量
         // GetUnitAxis(EAxis::X): 获取"前方"的单位向量
         FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        
+
         // GetUnitAxis(EAxis::Y): 获取"右方"的单位向量
         FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
@@ -733,7 +734,7 @@ void AMyCharacter::OnAttackStarted(const FInputActionValue& Value)
     // 播放攻击动画（需要在AnimBP中配置）
     // PlayAnimMontage 播放动画蒙太奇
     // 具体实现见"章节案例"
-    
+
     UE_LOG(LogTemp, Log, TEXT("攻击！"));
 }
 
@@ -741,7 +742,7 @@ void AMyCharacter::OnInteractStarted(const FInputActionValue& Value)
 {
     // 执行射线检测，看面前有没有可交互的物体
     // 具体实现见"章节案例"
-    
+
     UE_LOG(LogTemp, Log, TEXT("交互！"));
 }
 ```
@@ -754,26 +755,26 @@ void AMyCharacter::OnInteractStarted(const FInputActionValue& Value)
 
 在 InputMappingContext 中为手柄按键绑定：
 
-| Xbox 按键 | 通用名称（UE中使用这个） | 典型游戏用途 |
-|-----------|------------------------|-------------|
-| A (下方按钮) | Gamepad Face Button Bottom | 跳跃 |
-| B (右边按钮) | Gamepad Face Button Right | 蹲伏 / 取消 |
-| X (左边按钮) | Gamepad Face Button Left | 交互 / 换弹 |
-| Y (上方按钮) | Gamepad Face Button Top | 切换武器 |
-| 左摇杆 | Gamepad Left Thumbstick 2D | 移动 |
-| 按下左摇杆 | Gamepad Left Thumbstick Button | 冲刺 |
-| 右摇杆 | Gamepad Right Thumbstick 2D | 视角 |
-| 按下右摇杆 | Gamepad Right Thumbstick Button | 锁定目标 / 近战 |
-| 左扳机 (LT) | Gamepad Left Trigger | 瞄准 |
-| 右扳机 (RT) | Gamepad Right Trigger | 开火 |
-| 左肩键 (LB) | Gamepad Left Shoulder | 使用技能 |
-| 右肩键 (RB) | Gamepad Right Shoulder | 投掷 |
-| 十字键上 | Gamepad D-pad Up | 切换物品/武器 |
-| 十字键下 | Gamepad D-pad Down | 使用物品 |
-| 十字键左 | Gamepad D-pad Left | 上一个 |
-| 十字键右 | Gamepad D-pad Right | 下一个 |
-| Start | Gamepad Special Right | 暂停/菜单 |
-| Select | Gamepad Special Left | 地图/背包 |
+| Xbox 按键    | 通用名称（UE中使用这个）        | 典型游戏用途    |
+| ------------ | ------------------------------- | --------------- |
+| A (下方按钮) | Gamepad Face Button Bottom      | 跳跃            |
+| B (右边按钮) | Gamepad Face Button Right       | 蹲伏 / 取消     |
+| X (左边按钮) | Gamepad Face Button Left        | 交互 / 换弹     |
+| Y (上方按钮) | Gamepad Face Button Top         | 切换武器        |
+| 左摇杆       | Gamepad Left Thumbstick 2D      | 移动            |
+| 按下左摇杆   | Gamepad Left Thumbstick Button  | 冲刺            |
+| 右摇杆       | Gamepad Right Thumbstick 2D     | 视角            |
+| 按下右摇杆   | Gamepad Right Thumbstick Button | 锁定目标 / 近战 |
+| 左扳机 (LT)  | Gamepad Left Trigger            | 瞄准            |
+| 右扳机 (RT)  | Gamepad Right Trigger           | 开火            |
+| 左肩键 (LB)  | Gamepad Left Shoulder           | 使用技能        |
+| 右肩键 (RB)  | Gamepad Right Shoulder          | 投掷            |
+| 十字键上     | Gamepad D-pad Up                | 切换物品/武器   |
+| 十字键下     | Gamepad D-pad Down              | 使用物品        |
+| 十字键左     | Gamepad D-pad Left              | 上一个          |
+| 十字键右     | Gamepad D-pad Right             | 下一个          |
+| Start        | Gamepad Special Right           | 暂停/菜单       |
+| Select       | Gamepad Special Left            | 地图/背包       |
 
 ### 6.2 如何在 IMC 中添加手柄绑定
 

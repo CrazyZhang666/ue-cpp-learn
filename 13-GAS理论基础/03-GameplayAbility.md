@@ -104,7 +104,7 @@
 
 /**
  * UMyFireballAbility - 火球术技能
- * 
+ *
  * 继承自 UGameplayAbility，这是所有技能的基类
  */
 UCLASS()
@@ -171,7 +171,7 @@ private:
     // 蒙太奇播放完成的回调
     UFUNCTION()
     void OnMontageCompleted();
-    
+
     // 蒙太奇被中断的回调
     UFUNCTION()
     void OnMontageCancelled();
@@ -259,10 +259,10 @@ void UMyFireballAbility::ActivateAbility(
     // ===== 步骤2：获取必要的引用 =====
     // 获取角色的ASC
     UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
-    
+
     // 获取Avatar（物理角色）
     AActor* Avatar = ActorInfo->AvatarActor.Get();
-    
+
     // 获取Character（如果是玩家/NPC）
     ACharacter* Character = Cast<ACharacter>(Avatar);
 
@@ -297,7 +297,7 @@ void UMyFireballAbility::EndAbility(
     bool bWasCancelled)
 {
     // ===== 清理工作 =====
-    
+
     // 停止技能动画
     if (ActorInfo && ActorInfo->AbilitySystemComponent.IsValid())
     {
@@ -308,7 +308,7 @@ void UMyFireballAbility::EndAbility(
     // 不需要手动 RemoveLooseGameplayTag(State.Combat.Casting)
 
     // 调用基类（必须！基类会处理很多清理工作）
-    Super::EndAbility(Handle, ActorInfo, ActivationInfo, 
+    Super::EndAbility(Handle, ActorInfo, ActivationInfo,
                       bReplicateEndAbility, bWasCancelled);
 }
 
@@ -349,7 +349,7 @@ void UMyFireballAbility::SpawnFireball()
     }
 
     // 计算生成位置（角色前方一定距离）
-    FVector SpawnLocation = Avatar->GetActorLocation() + 
+    FVector SpawnLocation = Avatar->GetActorLocation() +
                             Avatar->GetActorForwardVector() * 100.0f;
     FRotator SpawnRotation = Avatar->GetActorRotation();
 
@@ -357,7 +357,7 @@ void UMyFireballAbility::SpawnFireball()
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = Avatar;                          // 设置所有者
     SpawnParams.Instigator = Avatar;                     // 设置触发者（用于击杀统计等）
-    SpawnParams.SpawnCollisionHandlingOverride = 
+    SpawnParams.SpawnCollisionHandlingOverride =
         ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // 忽略碰撞检测直接生成
 
     // 生成投射物
@@ -372,7 +372,7 @@ void UMyFireballAbility::SpawnFireball()
     {
         // 把伤害GE类传递给投射物，碰撞时使用
         Projectile->SetDamageEffectClass(DamageEffectClass);
-        
+
         // 设置投射物的ASC（用于后续应用伤害GE）
         Projectile->SetOwnerAbilitySystemComponent(
             ActorInfo->AbilitySystemComponent.Get()
@@ -554,7 +554,7 @@ UMyFireballAbility::UMyFireballAbility()
 // CommitAbility 的完整流程
 // 当你调用 CommitAbility() 时，内部执行顺序如下：
 
-void UMyFireballAbility::ActivateAbility(...) 
+void UMyFireballAbility::ActivateAbility(...)
 {
     // CommitAbility 内部做了：
     // 1. 调用 CheckCost()  —— 检查消耗是否足够
@@ -567,14 +567,14 @@ void UMyFireballAbility::ActivateAbility(...)
     //
     // 4. 调用 CommitAbilityCooldown()
     //    应用CooldownGE到自身（启动冷却）
-    
+
     if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
     {
         // 消耗不足（法力不够）或冷却中
         EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
         return;
     }
-    
+
     // Commit成功 → 法力已扣，冷却已启
     // ✅ 可以安全地执行技能逻辑
     SpawnFireball();
@@ -603,14 +603,14 @@ UMyFireballAbility::UMyFireballAbility()
 // - Duration: 3.0秒
 // - 没有Modifier（不需要修改属性）
 // - 但添加了一个GameplayTag（如 Skill.Cooldown.Fireball）
-// 
+//
 // 当冷却GE激活时，ASC上有 Skill.Cooldown.Fireball 标签
 // GA的ActivationBlockedTags中应该包含 Skill.Cooldown.Fireball
 // 冷却GE到期后，标签自动移除，技能恢复可用
 
 
 // ===== 获取技能的剩余冷却时间 =====
-float GetRemainingCooldown(UAbilitySystemComponent* ASC, 
+float GetRemainingCooldown(UAbilitySystemComponent* ASC,
                           FGameplayAbilitySpecHandle AbilityHandle)
 {
     if (!ASC) return 0.0f;
@@ -622,7 +622,7 @@ float GetRemainingCooldown(UAbilitySystemComponent* ASC,
     // 查询冷却GE的剩余时间
     float TimeRemaining = 0.0f;
     float Duration = 0.0f;
-    
+
     for (const FGameplayTag& Tag : CooldownTags)
     {
         ASC->GetActiveGameplayEffectRemainingTime(Tag, TimeRemaining, Duration);
@@ -631,7 +631,7 @@ float GetRemainingCooldown(UAbilitySystemComponent* ASC,
             break;
         }
     }
-    
+
     return TimeRemaining;
 }
 ```
@@ -757,7 +757,7 @@ UMyJumpAbility::UMyJumpAbility()
     // LocalPredicted: 本地预测执行（客户端先执行→服务器验证）
     // 适合：移动技能（需要低延迟手感）
     NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
-    
+
     // 只有LocalPredicted才需要配置这个
     NetSecurityPolicy = EGameplayAbilityNetSecurityPolicy::ClientOrServer;
 }
@@ -788,7 +788,7 @@ void UMyFireballAbility::ActivateAbility(...)
     if (CastingMontage)
     {
         // 创建一个异步任务：播放蒙太奇，等待它完成或中断
-        UAbilityTask_PlayMontageAndWait* MontageTask = 
+        UAbilityTask_PlayMontageAndWait* MontageTask =
             UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
                 this,                              // OwningAbility
                 TEXT("FireballMontage"),           // TaskInstanceName
@@ -799,10 +799,10 @@ void UMyFireballAbility::ActivateAbility(...)
 
         // 绑定蒙太奇完成回调
         MontageTask->OnCompleted.AddDynamic(this, &UMyFireballAbility::OnMontageCompleted);
-        
+
         // 绑定蒙太奇中断回调（被伤害打断等）
         MontageTask->OnInterrupted.AddDynamic(this, &UMyFireballAbility::OnMontageCancelled);
-        
+
         // 绑定蒙太奇混合回调
         MontageTask->OnBlendOut.AddDynamic(this, &UMyFireballAbility::OnMontageCompleted);
 
@@ -835,7 +835,7 @@ void UMyFireballAbility::OnMontageCompleted()
 void UMyFireballAbility::OnMontageCancelled()
 {
     // 动画被中断 → 取消技能
-    CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), 
+    CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(),
                   GetCurrentActivationInfo(), true);
 }
 ```
@@ -852,12 +852,12 @@ void UMyFireballAbility::OnMontageCancelled()
 #include "Abilities/GameplayAbility.h"
 #include "MyFireballAbility.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFireballAbilityDelegate, 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFireballAbilityDelegate,
     float, DamageDealt);
 
 /**
  * 火球术技能
- * 
+ *
  * 功能说明：
  * - 消耗20法力，冷却3秒
  * - 不能被眩晕/沉默时使用
@@ -1009,7 +1009,7 @@ void UMyFireballAbility::ActivateAbility(
     // ===== 步骤2：播放施法动画 =====
     if (CastingMontage && ActorInfo && ActorInfo->AvatarActor.IsValid())
     {
-        UAbilityTask_PlayMontageAndWait* MontageTask = 
+        UAbilityTask_PlayMontageAndWait* MontageTask =
             UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
                 this,
                 TEXT("FireballCasting"),
@@ -1034,7 +1034,7 @@ void UMyFireballAbility::ActivateAbility(
     DelayTask->OnFinish.AddDynamic(this, &UMyFireballAbility::OnSpawnDelayFinished);
     DelayTask->ReadyForActivation();
 
-    // 注意：这里不立即 EndAbility 
+    // 注意：这里不立即 EndAbility
     // 技能会等动画结束或火球生成后才结束
 }
 
@@ -1064,7 +1064,7 @@ void UMyFireballAbility::ExecuteFireball()
     }
 
     // 计算生成位置和朝向
-    FVector SpawnLocation = Avatar->GetActorLocation() + 
+    FVector SpawnLocation = Avatar->GetActorLocation() +
                             Avatar->GetActorRotation().RotateVector(SpawnOffset);
     FRotator SpawnRotation = Avatar->GetActorRotation();
 
@@ -1072,7 +1072,7 @@ void UMyFireballAbility::ExecuteFireball()
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = Avatar;
     SpawnParams.Instigator = Cast<APawn>(Avatar);
-    SpawnParams.SpawnCollisionHandlingOverride = 
+    SpawnParams.SpawnCollisionHandlingOverride =
         ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
     // 生成投射物

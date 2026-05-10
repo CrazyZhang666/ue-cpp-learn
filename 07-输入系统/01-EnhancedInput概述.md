@@ -10,14 +10,14 @@
 
 ### 旧输入系统的痛点
 
-| 痛点 | 描述 | 影响 |
-|------|------|------|
+| 痛点           | 描述                                                                     | 影响                             |
+| -------------- | ------------------------------------------------------------------------ | -------------------------------- |
 | **硬编码键位** | 输入绑定用 `ActionMappings` 和 `AxisMappings` 写在 `DefaultInput.ini` 里 | 玩家无法改键，改键需要改配置文件 |
-| **耦合严重** | C++代码直接依赖具体的按键名 `"Jump"` `"MoveForward"` | 改一个输入名需要全局搜索替换 |
-| **无优先级** | 多个输入响应同时触发时，无法控制谁"赢" | 开车时还能开枪——分不清上下文 |
-| **无组合键** | 不支持 `Shift+E` `Ctrl+W` 这类组合键 | 键位不够用，只能妥协 |
-| **手柄支持差** | 键盘/鼠标/手柄的处理逻辑混在一起 | 想做好手柄体验需要写大量代码 |
-| **无输入修饰** | 无法在数据层面处理死区、平滑、缩放 | 每个项目都要手写这些逻辑 |
+| **耦合严重**   | C++代码直接依赖具体的按键名 `"Jump"` `"MoveForward"`                     | 改一个输入名需要全局搜索替换     |
+| **无优先级**   | 多个输入响应同时触发时，无法控制谁"赢"                                   | 开车时还能开枪——分不清上下文     |
+| **无组合键**   | 不支持 `Shift+E` `Ctrl+W` 这类组合键                                     | 键位不够用，只能妥协             |
+| **手柄支持差** | 键盘/鼠标/手柄的处理逻辑混在一起                                         | 想做好手柄体验需要写大量代码     |
+| **无输入修饰** | 无法在数据层面处理死区、平滑、缩放                                       | 每个项目都要手写这些逻辑         |
 
 > **一句话总结旧输入系统的问题**：它把"物理按键"和"游戏动作"绑死在一起，缺乏中间层来做灵活映射。
 
@@ -285,30 +285,30 @@ Enhanced Input System 由三个核心概念组成。缺一不可。
 
 ### 概念对比
 
-| 对比维度 | 旧输入系统 | Enhanced Input System |
-|----------|-----------|----------------------|
-| **动作定义** | 在代码中用字符串 `"Jump"` | InputAction 数据资产 |
-| **按键绑定** | Project Settings → Input → ActionMappings | InputMappingContext 数据资产 |
-| **绑定方式** | `PlayerInputComponent->BindAction("Jump", ...)` | `EnhancedInputComponent->BindAction(IA_Jump, ...)` |
-| **按键类型** | Action（按下）和 Axis（连续值）分开 | 统一为 InputAction，用 ValueType 区分 |
-| **C++类** | `UInputComponent` | `UEnhancedInputComponent`（子类） |
-| **绑定函数** | `BindAction()` / `BindAxis()` | `BindAction()`（统一，靠 ValueType 和 TriggerEvent 区分） |
+| 对比维度     | 旧输入系统                                      | Enhanced Input System                                     |
+| ------------ | ----------------------------------------------- | --------------------------------------------------------- |
+| **动作定义** | 在代码中用字符串 `"Jump"`                       | InputAction 数据资产                                      |
+| **按键绑定** | Project Settings → Input → ActionMappings       | InputMappingContext 数据资产                              |
+| **绑定方式** | `PlayerInputComponent->BindAction("Jump", ...)` | `EnhancedInputComponent->BindAction(IA_Jump, ...)`        |
+| **按键类型** | Action（按下）和 Axis（连续值）分开             | 统一为 InputAction，用 ValueType 区分                     |
+| **C++类**    | `UInputComponent`                               | `UEnhancedInputComponent`（子类）                         |
+| **绑定函数** | `BindAction()` / `BindAxis()`                   | `BindAction()`（统一，靠 ValueType 和 TriggerEvent 区分） |
 
 ### 功能对比
 
-| 功能 | 旧输入系统 | Enhanced Input System |
-|------|-----------|----------------------|
-| **运行时改键** | ❌ 需要自己实现 | ✅ 内置支持 `UEnhancedInputUserSettings` |
-| **输入上下文切换** | ❌ 需要手动启用/禁用 | ✅ 自动优先级管理 |
-| **组合键**（Ctrl+C） | ❌ 不支持 | ✅ 内置 Chord Action |
-| **按住检测**（长按） | ❌ 需要自己计时 | ✅ 内置 Hold Trigger |
-| **连击检测**（双击） | ❌ 需要自己实现 | ✅ 内置 Tap Trigger + Combo |
-| **死区处理** | ❌ 手动代码 | ✅ DeadZone Modifier |
-| **输入平滑** | ❌ 手动代码 | ✅ Smooth Modifier |
-| **按键重映射** | ❌ 复杂的 INI 操作 | ✅ 简单的运行时 API |
-| **手柄支持** | ⚠️ 基础支持，无高级功能 | ✅ 原生支持所有主流手柄 |
-| **触摸屏支持** | ❌ 很差 | ✅ 原生支持 |
-| **多个输入映射同一动作** | ⚠️ 需要多个绑定 | ✅ 在 Context 中轻松配置 |
+| 功能                     | 旧输入系统              | Enhanced Input System                    |
+| ------------------------ | ----------------------- | ---------------------------------------- |
+| **运行时改键**           | ❌ 需要自己实现         | ✅ 内置支持 `UEnhancedInputUserSettings` |
+| **输入上下文切换**       | ❌ 需要手动启用/禁用    | ✅ 自动优先级管理                        |
+| **组合键**（Ctrl+C）     | ❌ 不支持               | ✅ 内置 Chord Action                     |
+| **按住检测**（长按）     | ❌ 需要自己计时         | ✅ 内置 Hold Trigger                     |
+| **连击检测**（双击）     | ❌ 需要自己实现         | ✅ 内置 Tap Trigger + Combo              |
+| **死区处理**             | ❌ 手动代码             | ✅ DeadZone Modifier                     |
+| **输入平滑**             | ❌ 手动代码             | ✅ Smooth Modifier                       |
+| **按键重映射**           | ❌ 复杂的 INI 操作      | ✅ 简单的运行时 API                      |
+| **手柄支持**             | ⚠️ 基础支持，无高级功能 | ✅ 原生支持所有主流手柄                  |
+| **触摸屏支持**           | ❌ 很差                 | ✅ 原生支持                              |
+| **多个输入映射同一动作** | ⚠️ 需要多个绑定         | ✅ 在 Context 中轻松配置                 |
 
 ### 代码对比
 
@@ -348,15 +348,15 @@ void AMyCharacter::OnMoveForward(float Value)
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     // ✅ 新方式：使用 UEnhancedInputComponent 绑定 InputAction 资产
-    UEnhancedInputComponent* EnhancedInput = 
+    UEnhancedInputComponent* EnhancedInput =
         CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 
     // ✅ 使用资产指针，有编译检查，不会拼写错误
-    EnhancedInput->BindAction(IA_Move, ETriggerEvent::Triggered, 
+    EnhancedInput->BindAction(IA_Move, ETriggerEvent::Triggered,
                               this, &AMyCharacter::OnMove);
-    EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Started, 
+    EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Started,
                               this, &AMyCharacter::OnJump);
-    EnhancedInput->BindAction(IA_Fire, ETriggerEvent::Started, 
+    EnhancedInput->BindAction(IA_Fire, ETriggerEvent::Started,
                               this, &AMyCharacter::OnFire);
 }
 

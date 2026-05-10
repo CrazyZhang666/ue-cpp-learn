@@ -61,7 +61,7 @@
 
 /**
  * 角色属性集
- * 
+ *
  * 包含所有可被GameplayEffect修改的角色属性
  * 每个属性使用 FGameplayAttributeData 类型
  */
@@ -75,7 +75,7 @@ public:
 
     // ===== 生命值属性 =====
     // ReplicatedUsing = 网络同步时触发OnRep函数
-    UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, 
+    UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health,
               Category = "Attributes|Vital")
     FGameplayAttributeData Health;
     ATTRIBUTE_ACCESSORS(UMyAttributeSet, Health)  // 自动生成GetHealth/SetHealth/InitHealth
@@ -135,10 +135,10 @@ public:
     ATTRIBUTE_ACCESSORS(UMyAttributeSet, MoveSpeed)
 
     // ===== 属性变化回调 =====
-    
+
     // 属性修改前回调 —— 用于Clamp（限制值域）
     virtual void PreAttributeChange(
-        const FGameplayAttribute& Attribute, 
+        const FGameplayAttribute& Attribute,
         float& NewValue
     ) override;
 
@@ -149,7 +149,7 @@ public:
 
     // 属性应用后回调（所有GE计算完成后）
     virtual void PreAttributeBaseChange(
-        const FGameplayAttribute& Attribute, 
+        const FGameplayAttribute& Attribute,
         float& NewValue
     ) const override;
 
@@ -163,7 +163,7 @@ protected:
     // ===== 网络同步回调 =====
     // 当属性从服务器同步到客户端时调用
     // 用于更新UI等客户端表现
-    
+
     UFUNCTION()
     virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
 
@@ -384,7 +384,7 @@ void UMyAttributeSet::PostGameplayEffectExecute(
     if (ModifiedAttribute == GetHealthAttribute())
     {
         // 生命值被修改后的事件
-        
+
         // ✅ 正确：限制生命值范围
         float ClampedHealth = FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth());
         SetHealth(ClampedHealth);
@@ -451,7 +451,7 @@ void UMyAttributeSet::HandleDeath(const FGameplayEffectModCallbackData& Data)
     FGameplayEventData DeathEventData;
     DeathEventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
     DeathEventData.Target = Data.Target.AvatarActor.Get();
-    
+
     TargetASC->HandleGameplayEvent(
         FGameplayTag::RequestGameplayTag(FName("Event.Death")),
         &DeathEventData
@@ -525,7 +525,7 @@ void UMyAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed
 }
 
 void UMyAttributeSet::PreAttributeBaseChange(
-    const FGameplayAttribute& Attribute, 
+    const FGameplayAttribute& Attribute,
     float& NewValue) const
 {
     Super::PreAttributeBaseChange(Attribute, NewValue);

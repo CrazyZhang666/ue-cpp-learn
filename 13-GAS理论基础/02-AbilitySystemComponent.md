@@ -145,6 +145,7 @@ public:
 ```
 
 **为什么AI适合放在Character上？**
+
 - AI不会切换关卡（在当前关卡出生，当前关卡死亡）
 - AI不存在PlayerState（玩家专用）
 - 简单直接，不需要通过接口间接访问
@@ -197,15 +198,15 @@ public:
 UAbilitySystemComponent* GetASC(AActor* Actor)
 {
     // 第一步：检查Actor是否实现了IAbilitySystemInterface
-    IAbilitySystemInterface* GASInterface = 
+    IAbilitySystemInterface* GASInterface =
         Cast<IAbilitySystemInterface>(Actor);
-    
+
     if (GASInterface)
     {
         // 通过接口获取ASC —— 不管ASC在PlayerState还是Character上
         return GASInterface->GetAbilitySystemComponent();
     }
-    
+
     return nullptr;
 }
 
@@ -215,7 +216,7 @@ void DealDamageToTarget(AActor* SourceActor, AActor* TargetActor, float Damage)
     // 获取源和目标的ASC
     UAbilitySystemComponent* SourceASC = GetASC(SourceActor);
     UAbilitySystemComponent* TargetASC = GetASC(TargetActor);
-    
+
     if (SourceASC && TargetASC)
     {
         // 通过ASC应用伤害...（后面章节会详细讲）
@@ -239,7 +240,7 @@ void DealDamageToTarget(AActor* SourceActor, AActor* TargetActor, float Damage)
 #include "MyPlayerState.generated.h"
 
 UCLASS()
-class MYGAME_API AMyPlayerState : public APlayerState, 
+class MYGAME_API AMyPlayerState : public APlayerState,
                                    public IAbilitySystemInterface  // 实现GAS接口
 {
     GENERATED_BODY()
@@ -257,13 +258,13 @@ public:
     T* GetAttributeSet() const
     {
         // 从ASC上查找指定类型的AttributeSet
-        return AbilitySystemComponent ? 
+        return AbilitySystemComponent ?
             const_cast<T*>(AbilitySystemComponent->GetAttributeSet<T>()) : nullptr;
     }
 
 protected:
     // ===== GAS核心组件 =====
-    
+
     // ASC - 技能系统的大脑
     // VisibleAnywhere: 在编辑器中可见（但不能编辑）
     // BlueprintReadOnly: 蓝图可以读取
@@ -293,13 +294,13 @@ AMyPlayerState::AMyPlayerState()
     AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(
         TEXT("AbilitySystemComponent")  // 子对象名称（调试用）
     );
-    
+
     // 设置ASC的网络复制模式
     // Mixed模式：部分数据复制到所有客户端，部分仅复制到Owner
     AbilitySystemComponent->SetReplicationMode(
         EGameplayEffectReplicationMode::Mixed
     );
-    
+
     // ⚠️ 重要：PlayerState本身就是Actor，默认开启网络同步
     // 所以ASC会自动获得网络复制能力
     // NetUpdateFrequency 在PlayerState中默认已设置
@@ -327,14 +328,14 @@ void AMyPlayerState::BeginPlay()
         // CreateDefaultSubobject 在工作，但AttributeSet不在构造函数创建
         // 因为AttributeSet在BeginPlay时初始化更安全
         AttributeSet = NewObject<UMyAttributeSet>(this);
-        
+
         // 把AttributeSet注册到ASC
         AbilitySystemComponent->AddAttributeSetSubobject(AttributeSet);
     }
 
     // 初始化默认属性（后面章节详讲）
     // InitDefaultAttributes();
-    
+
     // 授予默认技能（后面章节详讲）
     // GiveDefaultAbilities();
 }
@@ -344,11 +345,11 @@ void AMyPlayerState::BeginPlay()
 
 ASC有三种复制模式，在创建ASC时必须选择正确的模式：
 
-| 模式 | 说明 | 适用场景 |
-|------|------|---------|
-| `Full` | 所有GE复制到所有客户端 | 简单、数据量大，不推荐 |
-| `Mixed` | GE复制到拥有者客户端，简化的GE复制到模拟端 | **推荐**，玩家角色用这个 |
-| `Minimal` | 只有最小量的GE复制 | AI敌人用这个 |
+| 模式      | 说明                                       | 适用场景                 |
+| --------- | ------------------------------------------ | ------------------------ |
+| `Full`    | 所有GE复制到所有客户端                     | 简单、数据量大，不推荐   |
+| `Mixed`   | GE复制到拥有者客户端，简化的GE复制到模拟端 | **推荐**，玩家角色用这个 |
+| `Minimal` | 只有最小量的GE复制                         | AI敌人用这个             |
 
 ```cpp
 // ✅ 玩家角色（ASC在PlayerState）使用Mixed模式
@@ -474,12 +475,12 @@ void GiveAbilityByClass(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayAbili
     // 把技能规格给予ASC
     // GiveAbility 返回一个句柄（FGameplayAbilitySpecHandle），用于后续操作
     FGameplayAbilitySpecHandle Handle = ASC->GiveAbility(AbilitySpec);
-    
+
     // 可以通过Handle来查找、修改或移除技能
 }
 
 // 方式2：批量给予默认技能（通常在BeginPlay中调用）
-void GiveDefaultAbilities(UAbilitySystemComponent* ASC, 
+void GiveDefaultAbilities(UAbilitySystemComponent* ASC,
                           const TArray<TSubclassOf<UGameplayAbility>>& DefaultAbilities)
 {
     // 循环给予所有默认技能
@@ -489,7 +490,7 @@ void GiveDefaultAbilities(UAbilitySystemComponent* ASC,
         {
             // 给每个技能分配一个唯一InputID
             int32 InputID = static_cast<int32>(AbilityClass->GetDefaultObject()->GetUniqueID());
-            
+
             FGameplayAbilitySpec Spec(AbilityClass, 1, InputID);
             ASC->GiveAbility(Spec);
         }
@@ -522,7 +523,7 @@ ASC的自动检查清单：
 // ===== 激活技能的多种方式 =====
 
 // 方式1：通过技能类激活（最常用）
-bool TryActivateByClass(UAbilitySystemComponent* ASC, 
+bool TryActivateByClass(UAbilitySystemComponent* ASC,
                         TSubclassOf<UGameplayAbility> AbilityClass)
 {
     if (!ASC || !AbilityClass)
@@ -540,7 +541,7 @@ bool TryActivateByClass(UAbilitySystemComponent* ASC,
 
 // 方式2：通过技能标签激活
 // 如果你给技能配置了Ability Tags，可以用标签激活
-bool TryActivateByTag(UAbilitySystemComponent* ASC, 
+bool TryActivateByTag(UAbilitySystemComponent* ASC,
                       const FGameplayTag& AbilityTag)
 {
     // 通过标签查找并激活匹配的技能
@@ -564,7 +565,7 @@ void TryActivateByInputID(UAbilitySystemComponent* ASC, int32 InputID)
 }
 
 // 方式4：通过Spec Handle激活
-bool TryActivateByHandle(UAbilitySystemComponent* ASC, 
+bool TryActivateByHandle(UAbilitySystemComponent* ASC,
                          FGameplayAbilitySpecHandle Handle)
 {
     return ASC->TryActivateAbility(Handle);
@@ -588,7 +589,7 @@ bool TryActivateByHandle(UAbilitySystemComponent* ASC,
 // ===== 应用效果到自身 =====
 // 场景：玩家喝了一瓶恢复药水
 
-void DrinkHealthPotion(UAbilitySystemComponent* ASC, 
+void DrinkHealthPotion(UAbilitySystemComponent* ASC,
                        TSubclassOf<UGameplayEffect> HealthPotionGE)
 {
     if (!ASC || !HealthPotionGE)
@@ -664,14 +665,14 @@ float GetHealth(UAbilitySystemComponent* ASC)
 {
     // 获取属性定义
     FGameplayAttribute HealthAttribute = UMyAttributeSet::GetHealthAttribute();
-    
+
     // 查询当前值
     float Health = 0.0f;
     if (ASC->GetGameplayAttributeValue(HealthAttribute, Health))
     {
         return Health;
     }
-    
+
     return 0.0f;
 }
 
@@ -690,10 +691,10 @@ float GetHealthDirect(UAbilitySystemComponent* ASC)
 float GetBaseHealth(UAbilitySystemComponent* ASC)
 {
     FGameplayAttribute HealthAttribute = UMyAttributeSet::GetHealthAttribute();
-    
+
     float BaseValue = 0.0f;
     ASC->GetGameplayAttributeValue(HealthAttribute, BaseValue);  // 这实际返回的是CurrentValue
-    
+
     // 要获取BaseValue，需要：
     bool bFound = false;
     float RealBaseValue = ASC->GetGameplayAttributeBaseValue(HealthAttribute, bFound);
@@ -772,7 +773,7 @@ class UAbilitySystemComponent;
 class UMyAttributeSet;
 
 UCLASS()
-class MYGAME_API AMyPlayerState : public APlayerState, 
+class MYGAME_API AMyPlayerState : public APlayerState,
                                    public IAbilitySystemInterface
 {
     GENERATED_BODY()
@@ -791,7 +792,7 @@ public:
         if (!AttributeSet)
         {
             // 从ASC中查找
-            return AbilitySystemComponent ? 
+            return AbilitySystemComponent ?
                 const_cast<UMyAttributeSet*>(
                     AbilitySystemComponent->GetAttributeSet<UMyAttributeSet>()
                 ) : nullptr;
@@ -883,7 +884,7 @@ void AMyPlayerState::InitDefaultAttributes()
 
     // 应用默认属性GE到自身
     // 注意：这里不能直接用类的CDO，因为GE的数据可能需要在Spec中定制
-    FGameplayEffectSpecHandle SpecHandle = 
+    FGameplayEffectSpecHandle SpecHandle =
         AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeGE, 1, Context);
 
     if (SpecHandle.IsValid())
@@ -944,9 +945,9 @@ void DebugPrintASCInfo(UAbilitySystemComponent* ASC)
 
     // 打印所有者信息
     UE_LOG(LogTemp, Warning, TEXT("=== ASC Debug Info ==="));
-    UE_LOG(LogTemp, Warning, TEXT("Owner: %s"), 
+    UE_LOG(LogTemp, Warning, TEXT("Owner: %s"),
         ASC->GetOwnerActor() ? *ASC->GetOwnerActor()->GetName() : TEXT("None"));
-    UE_LOG(LogTemp, Warning, TEXT("Avatar: %s"), 
+    UE_LOG(LogTemp, Warning, TEXT("Avatar: %s"),
         ASC->GetAvatarActor() ? *ASC->GetAvatarActor()->GetName() : TEXT("None"));
 
     // 打印所有技能

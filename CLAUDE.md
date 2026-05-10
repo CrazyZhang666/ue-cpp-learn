@@ -22,6 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 章节结构
 
 每个章节遵循以下模式：
+
 ```
 XX-章节名/
 ├── 01-知识点1.md       ← 核心教学内容
@@ -36,6 +37,7 @@ XX-章节名/
 ## 示例中的UE5代码风格
 
 所有代码示例必须遵循UE5规范：
+
 - 类前缀：`A`（Actor）、`U`（UObject）、`F`（结构体）、`I`（接口）、`E`（枚举）、`T`（模板）
 - 每个UE类中必须包含`UCLASS()`、`UPROPERTY()`、`UFUNCTION()`、`GENERATED_BODY()`
 - `.generated.h`作为最后一个包含头文件

@@ -32,16 +32,17 @@ int32 MyValue;  // UE系统完全管理这个变量
 
 ### 第一类：可见性与可编辑性
 
-| 说明符 | 编辑器可见 | 编辑器可改 | 使用场景 |
-|--------|-----------|-----------|---------|
-| `VisibleAnywhere` | ✅ | ❌（灰色） | 展示只读信息，如当前血量 |
-| `EditAnywhere` | ✅ | ✅ | 可调整的参数，如速度、伤害 |
-| `VisibleInstanceOnly` | ✅（仅关卡实例）| ❌ | 只在关卡中的实例可见 |
-| `EditInstanceOnly` | ✅（仅关卡实例）| ✅ | 只在关卡中可修改 |
-| `VisibleDefaultsOnly` | ✅（仅类默认值）| ❌ | 只在类默认设置中可见 |
-| `EditDefaultsOnly` | ✅（仅类默认值）| ✅ | 只能修改类默认值，实例不能改 |
+| 说明符                | 编辑器可见       | 编辑器可改 | 使用场景                     |
+| --------------------- | ---------------- | ---------- | ---------------------------- |
+| `VisibleAnywhere`     | ✅               | ❌（灰色） | 展示只读信息，如当前血量     |
+| `EditAnywhere`        | ✅               | ✅         | 可调整的参数，如速度、伤害   |
+| `VisibleInstanceOnly` | ✅（仅关卡实例） | ❌         | 只在关卡中的实例可见         |
+| `EditInstanceOnly`    | ✅（仅关卡实例） | ✅         | 只在关卡中可修改             |
+| `VisibleDefaultsOnly` | ✅（仅类默认值） | ❌         | 只在类默认设置中可见         |
+| `EditDefaultsOnly`    | ✅（仅类默认值） | ✅         | 只能修改类默认值，实例不能改 |
 
 > **"Anywhere" vs "DefaultsOnly" vs "InstanceOnly"**：
+>
 > - `Anywhere` = 在类默认设置和每个实例上都能看到/编辑
 > - `DefaultsOnly` = 只在类默认设置面板中看/编辑（影响所有实例）
 > - `InstanceOnly` = 只在关卡中的具体实例上看/编辑（每个实例可以不同）
@@ -50,19 +51,19 @@ int32 MyValue;  // UE系统完全管理这个变量
 
 ### 第二类：蓝图访问
 
-| 说明符 | 蓝图读取 | 蓝图写入 | 使用场景 |
-|--------|---------|---------|---------|
-| `BlueprintReadOnly` | ✅ | ❌ | 蓝图只读数据（如当前血量） |
-| `BlueprintReadWrite` | ✅ | ✅ | 蓝图可读写数据 |
-| - | ❌ | ❌ | 纯C++内部使用的变量 |
+| 说明符               | 蓝图读取 | 蓝图写入 | 使用场景                   |
+| -------------------- | -------- | -------- | -------------------------- |
+| `BlueprintReadOnly`  | ✅       | ❌       | 蓝图只读数据（如当前血量） |
+| `BlueprintReadWrite` | ✅       | ✅       | 蓝图可读写数据             |
+| -                    | ❌       | ❌       | 纯C++内部使用的变量        |
 
 ### 第三类：网络同步
 
-| 说明符 | 效果 |
-|--------|------|
-| `Replicated` | 标记为需要网络同步 |
+| 说明符                           | 效果               |
+| -------------------------------- | ------------------ |
+| `Replicated`                     | 标记为需要网络同步 |
 | `ReplicatedUsing=OnRep_Function` | 同步后调用回调函数 |
-| `NotReplicated` | 明确不复制（默认） |
+| `NotReplicated`                  | 明确不复制（默认） |
 
 ```cpp
 // 网络同步示例
@@ -79,17 +80,17 @@ void OnRep_Health()  // 客户端收到同步数据后自动调用
 
 ### 第四类：高级特性
 
-| 说明符 | 效果 |
-|--------|------|
-| `Transient` | 不序列化（不保存到磁盘） |
-| `SaveGame` | 存档系统中保存 |
-| `Config` | 保存到.ini配置文件 |
-| `Instanced` | 为这个属性创建实例（用于UObject子属性） |
-| `Export` | 嵌套UObject的序列化导出 |
-| `TextExportTransient` | FText类型不导出到文本 |
-| `DuplicateTransient` | 复制对象时不复制这个属性 |
-| `NonTransactional` | 不参与Undo/Redo系统 |
-| `SkipSerialization` | 完全跳过序列化 |
+| 说明符                | 效果                                    |
+| --------------------- | --------------------------------------- |
+| `Transient`           | 不序列化（不保存到磁盘）                |
+| `SaveGame`            | 存档系统中保存                          |
+| `Config`              | 保存到.ini配置文件                      |
+| `Instanced`           | 为这个属性创建实例（用于UObject子属性） |
+| `Export`              | 嵌套UObject的序列化导出                 |
+| `TextExportTransient` | FText类型不导出到文本                   |
+| `DuplicateTransient`  | 复制对象时不复制这个属性                |
+| `NonTransactional`    | 不参与Undo/Redo系统                     |
+| `SkipSerialization`   | 完全跳过序列化                          |
 
 ```cpp
 // 临时数据：运行时有值，但不保存

@@ -21,11 +21,11 @@ class MYMODULE_API UMyClass : public UObject
 
 #### 蓝图相关
 
-| 参数 | 效果 |
-|------|------|
-| `Blueprintable` | 可以在蓝图中被继承（创建蓝图子类） |
+| 参数               | 效果                                                  |
+| ------------------ | ----------------------------------------------------- |
+| `Blueprintable`    | 可以在蓝图中被继承（创建蓝图子类）                    |
 | `NotBlueprintable` | 禁止蓝图继承（默认很多人是Blueprintable，看父类设置） |
-| `BlueprintType` | 可以作为蓝图变量类型 |
+| `BlueprintType`    | 可以作为蓝图变量类型                                  |
 
 ```cpp
 // 示例：创建一个可被蓝图继承的类
@@ -47,13 +47,13 @@ class MYGAME_API UInternalHelper : public UObject
 
 #### 编辑器相关
 
-| 参数 | 效果 |
-|------|------|
+| 参数                              | 效果                               |
+| --------------------------------- | ---------------------------------- |
 | `HideCategories("分类1","分类2")` | 在编辑器细节面板隐藏指定分类的属性 |
-| `ShowCategories("分类1")` | 显示指定分类 |
-| `ClassGroup("组名")` | 在添加类对话框中归到哪个组 |
-| `HideDropdown` | 不在类选择下拉框中出现 |
-| `Deprecated` | 标记为已弃用 |
+| `ShowCategories("分类1")`         | 显示指定分类                       |
+| `ClassGroup("组名")`              | 在添加类对话框中归到哪个组         |
+| `HideDropdown`                    | 不在类选择下拉框中出现             |
+| `Deprecated`                      | 标记为已弃用                       |
 
 ```cpp
 UCLASS(Blueprintable, HideCategories = (Physics, Collision))
@@ -68,12 +68,12 @@ class MYGAME_API AMyActor : public AActor
 
 #### 抽象与配置
 
-| 参数 | 效果 |
-|------|------|
-| `Abstract` | 抽象类，不能直接放入场景 |
-| `Config=Game` | 这个类的属性可以保存到Game.ini配置文件 |
-| `DefaultToInstanced` | 子对象默认创建实例（用于Component） |
-| `Within="OuterClassName"` | 限制这个类只能作为指定类的子对象 |
+| 参数                      | 效果                                   |
+| ------------------------- | -------------------------------------- |
+| `Abstract`                | 抽象类，不能直接放入场景               |
+| `Config=Game`             | 这个类的属性可以保存到Game.ini配置文件 |
+| `DefaultToInstanced`      | 子对象默认创建实例（用于Component）    |
+| `Within="OuterClassName"` | 限制这个类只能作为指定类的子对象       |
 
 ```cpp
 // 抽象类：只能被继承，不能直接实例化
@@ -115,15 +115,15 @@ struct MYMODULE_API FMyStruct
 
 ### USTRUCT vs UCLASS 的关键区别
 
-| 特性 | UCLASS | USTRUCT |
-|------|--------|---------|
-| 垃圾回收 | ✅ 自动GC | ❌ 不被GC管理（值类型） |
-| 继承 | ✅ 支持 | ❌ 不支持继承（只能单层） |
-| 蓝图变量 | ✅ | ✅（需BlueprintType） |
-| new创建 | ❌（用NewObject） | ✅（可以new） |
-| 栈上分配 | ❌ | ✅ |
-| 复制传递 | 引用（指针） | 值拷贝 |
-| 适用场景 | 复杂对象、组件 | 简单数据聚合 |
+| 特性     | UCLASS            | USTRUCT                   |
+| -------- | ----------------- | ------------------------- |
+| 垃圾回收 | ✅ 自动GC         | ❌ 不被GC管理（值类型）   |
+| 继承     | ✅ 支持           | ❌ 不支持继承（只能单层） |
+| 蓝图变量 | ✅                | ✅（需BlueprintType）     |
+| new创建  | ❌（用NewObject） | ✅（可以new）             |
+| 栈上分配 | ❌                | ✅                        |
+| 复制传递 | 引用（指针）      | 值拷贝                    |
+| 适用场景 | 复杂对象、组件    | 简单数据聚合              |
 
 ```cpp
 // 结构体：适合做"数据容器"
@@ -156,12 +156,12 @@ float Percent = Stats.GetHealthPercent();  // 0.75 = 75%
 
 ### USTRUCT常用参数
 
-| 参数 | 效果 |
-|------|------|
-| `BlueprintType` | 可以在蓝图中作为变量类型使用 |
-| `NotBlueprintType` | 禁止蓝图使用 |
-| `Atomic` | 原子结构体（确保完整拷贝） |
-| `Immutable` | 不可变结构体 |
+| 参数               | 效果                         |
+| ------------------ | ---------------------------- |
+| `BlueprintType`    | 可以在蓝图中作为变量类型使用 |
+| `NotBlueprintType` | 禁止蓝图使用                 |
+| `Atomic`           | 原子结构体（确保完整拷贝）   |
+| `Immutable`        | 不可变结构体                 |
 
 ---
 
@@ -195,18 +195,18 @@ EWeaponType Type = EWeaponType::Melee;
 
 ### UENUM常用参数
 
-| 参数 | 效果 |
-|------|------|
-| `BlueprintType` | 可作为蓝图变量类型 |
-| `Flags` | 标记为位标志枚举（可组合） |
+| 参数            | 效果                       |
+| --------------- | -------------------------- |
+| `BlueprintType` | 可作为蓝图变量类型         |
+| `Flags`         | 标记为位标志枚举（可组合） |
 
 ### UMETA常用参数
 
-| 参数 | 效果 |
-|------|------|
-| `DisplayName = "名称"` | 编辑器中显示的中文名 |
-| `Tooltip = "提示"` | 鼠标悬停时的提示文字 |
-| `Hidden` | 不在下拉列表中显示这个选项 |
+| 参数                   | 效果                       |
+| ---------------------- | -------------------------- |
+| `DisplayName = "名称"` | 编辑器中显示的中文名       |
+| `Tooltip = "提示"`     | 鼠标悬停时的提示文字       |
+| `Hidden`               | 不在下拉列表中显示这个选项 |
 
 ```cpp
 // Flags枚举：可以组合多个值

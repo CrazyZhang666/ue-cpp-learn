@@ -35,10 +35,11 @@ InputAction = 动作名称 + 值类型 + 触发条件配置
 ```
 
 > **命名规范**：遵循UE的命名约定。
+>
 > - ✅ `IA_Jump`, `IA_Move`, `IA_Fire`, `IA_Crouch`
 > - ✅ `IA_LightAttack`, `IA_HeavyAttack`
 > - ❌ `JumpAction`, `MoveInput`, `fire`（不统一、不规范）
-> 
+>
 > 统一使用 `IA_` 前缀，可以一眼识别这是一个 InputAction 资产。
 
 ### 1.3 ValueType —— 值的类型
@@ -100,6 +101,7 @@ InputAction 编辑界面:
 ```
 
 **关键理解**：
+
 - **Triggers（触发器）**决定"**什么时候**"通知C++代码。
 - **Modifiers（修饰器）**决定通知C++代码"**什么值**"。
 
@@ -118,15 +120,15 @@ InputAction 编辑界面:
 
 ### 2.1 内置触发器一览
 
-| 触发器 | 作用 | 典型用途 |
-|--------|------|---------|
-| **Pressed** | 按键按下的瞬间触发一次 | 跳跃、开枪（单发） |
-| **Released** | 按键松开的瞬间触发一次 | 停止蓄力、松开瞄准 |
-| **Down** | 按键被按住时每帧都触发 | 持续移动、连射 |
-| **Hold** | 按键按住超过指定时间后触发 | 长按交互、长按拾取 |
-| **Hold And Release** | 按住超时，或超时后松开发布时触发 | 蓄力攻击 |
-| **Tap** | 快速点击（按下后很快松开） | 轻攻击 |
-| **Pulse** | 按住后周期性触发 | 按住连射、按住滚动列表 |
+| 触发器               | 作用                             | 典型用途               |
+| -------------------- | -------------------------------- | ---------------------- |
+| **Pressed**          | 按键按下的瞬间触发一次           | 跳跃、开枪（单发）     |
+| **Released**         | 按键松开的瞬间触发一次           | 停止蓄力、松开瞄准     |
+| **Down**             | 按键被按住时每帧都触发           | 持续移动、连射         |
+| **Hold**             | 按键按住超过指定时间后触发       | 长按交互、长按拾取     |
+| **Hold And Release** | 按住超时，或超时后松开发布时触发 | 蓄力攻击               |
+| **Tap**              | 快速点击（按下后很快松开）       | 轻攻击                 |
+| **Pulse**            | 按住后周期性触发                 | 按住连射、按住滚动列表 |
 
 ### 2.2 Pressed 触发器
 
@@ -137,15 +139,16 @@ InputAction 编辑界面:
   - 适合"一次性"的动作
 
 时间线示例（按空格键）：
-  
+
   按键: ▁▁▁▁▁████████████████▁▁▁▁▁▁
   Pressed:        ●
   Released:                       ●
-  
+
   ● 标记处触发事件
 ```
 
 **配置参数**：
+
 - `ActuationThreshold`：按下阈值（默认0.5，对有行程的扳机键有效）
 - 一般不需要修改，保持默认即可
 
@@ -165,7 +168,7 @@ InputAction 编辑界面:
 ```
 
 > **注意**：Down 通常不在 InputAction 上配置，而是和 BindAction 的 `ETriggerEvent::Triggered` 配合使用。我们来理解一下两者的关系：
-> 
+>
 > - InputAction 的 Trigger 在"数据层面"决定什么条件下产生事件
 > - BindAction 的 ETriggerEvent 在"代码层面"决定你要响应哪种事件
 > - **两者是正交的**：一个控制数据何时产生，一个控制代码何时接收
@@ -187,7 +190,7 @@ InputAction 编辑界面:
   时间:      0    0.25    0.5    0.75   1.0
   Pressed:        ●
   Hold:                       ●  ← 按住超过0.5秒时触发
-  
+
 典型用途：
   - 长按R键 → 卸下所有弹匣
   - 短按R键 → 换弹
@@ -270,14 +273,14 @@ InputAction 编辑界面:
 
 ### 3.2 常用修饰器
 
-| 修饰器 | 作用 | 参数 | 典型用途 |
-|--------|------|------|---------|
-| **Dead Zone** | 过滤低于阈值的微小输入 | LowerThreshold | 摇杆漂移修正 |
-| **Negate** | 反转输入值（正变负，负变正） | 可分别反转X/Y/Z | 反转Y轴，反转鼠标方向 |
-| **Scalar** | 乘以一个缩放系数 | Scalar值 | 调整鼠标灵敏度 |
-| **Smooth** | 平滑输入值，减少突变 | SampleCount | 摇杆平滑过渡 |
-| **Swizzle Input Axis Values** | 交换/重排各轴的值 | 顺序配置 | WASD和摇杆统一 |
-| **Response Curve** | 使用曲线图来调整输入响应 | 曲线资产 | 自定义摇杆响应曲线 |
+| 修饰器                        | 作用                         | 参数            | 典型用途              |
+| ----------------------------- | ---------------------------- | --------------- | --------------------- |
+| **Dead Zone**                 | 过滤低于阈值的微小输入       | LowerThreshold  | 摇杆漂移修正          |
+| **Negate**                    | 反转输入值（正变负，负变正） | 可分别反转X/Y/Z | 反转Y轴，反转鼠标方向 |
+| **Scalar**                    | 乘以一个缩放系数             | Scalar值        | 调整鼠标灵敏度        |
+| **Smooth**                    | 平滑输入值，减少突变         | SampleCount     | 摇杆平滑过渡          |
+| **Swizzle Input Axis Values** | 交换/重排各轴的值            | 顺序配置        | WASD和摇杆统一        |
+| **Response Curve**            | 使用曲线图来调整输入响应     | 曲线资产        | 自定义摇杆响应曲线    |
 
 ### 3.3 Dead Zone 修饰器（死区）
 
@@ -287,7 +290,7 @@ InputAction 编辑界面:
 
 解决方案：Dead Zone 修饰器
       设置 LowerThreshold = 0.1
-      
+
       输入 0.002 → 0.0（被过滤）
       输入 0.08  → 0.0（被过滤，低于0.1）
       输入 0.15  → 0.15（保留，高于阈值）
@@ -377,7 +380,7 @@ InputAction 编辑界面:
   UE坐标:  X = 左右, Y = 前后
   但键盘输入: W/S = 前后 → 映射到 Y
              A/D = 左右 → 映射到 X
-  
+
   Swizzle 让我们统一手柄和键盘的轴顺序
 
 场景：将 YXZ → XYZ（交换X和Y轴）
@@ -394,7 +397,7 @@ InputAction 编辑界面:
 场景：自定义摇杆的非线性响应
   - 前半段（0~0.5）：曲线平缓，微调视角时很慢
   - 后半段（0.5~1.0）：曲线陡峭，推到底时转动很快
-  
+
   这样既能精确瞄准（微推摇杆），又能快速转身（推到底）
 
   输出值 ↑
@@ -561,10 +564,10 @@ InputMappingContext = 一组 "按键 → 动作" 的绑定集合
 示例:
   IMC_UI (优先级100):
     E键 → IA_UIConfirm  ← E键被绑定到"确认"
-  
+
   IMC_Default (优先级0):
     E键 → IA_Interact   ← E键也被绑定到"交互"
-  
+
   结果: 当UI打开时，按E键触发"确认"而非"交互"
         （因为IMC_UI优先级更高，它"拦截"了E键事件）
 ```
@@ -575,7 +578,7 @@ InputMappingContext = 一组 "按键 → 动作" 的绑定集合
 #include "EnhancedInputSubsystems.h"
 
 // 获取 EnhancedInputLocalPlayerSubsystem
-UEnhancedInputLocalPlayerSubsystem* Subsystem = 
+UEnhancedInputLocalPlayerSubsystem* Subsystem =
     ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
         GetLocalPlayer());
 
@@ -586,10 +589,10 @@ if (Subsystem)
     // 参数2: 优先级（数值越大优先级越高）
     Subsystem->AddMappingContext(IMC_Default, 0);
     Subsystem->AddMappingContext(IMC_Vehicle, 10);
-    
+
     // 移除（停用）一个 Context
     Subsystem->RemoveMappingContext(IMC_Default);
-    
+
     // 清空所有 Context
     Subsystem->ClearAllMappings();
 }

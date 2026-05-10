@@ -295,7 +295,7 @@ class UMyGameplayTags : public UObject
 public:
     // 在类加载时初始化一次，之后直接使用FGameplayTag变量
     // 避免每次RequestGameplayTag的查找开销
-    
+
     // 状态标签
     static FGameplayTag State_Dead;
     static FGameplayTag State_CC;
@@ -549,7 +549,7 @@ void UseTagQuery(UAbilitySystemComponent* ASC)
 {
     // 构建一个查询表达式：
     // 角色必须 (有 State.Combat.InCombat) 且 (没有 State.Dead 且没有 State.CC)
-    
+
     FGameplayTagQuery Query = FGameplayTagQuery::BuildQuery(
         FGameplayTagQueryExpression()
             .AllTagsMatch()                           // 所有条件都要满足
@@ -595,7 +595,7 @@ void DebugPrintAllTags(UAbilitySystemComponent* ASC)
     ASC->GetOwnedGameplayTags(AllTags);
 
     UE_LOG(LogTemp, Warning, TEXT("=== 角色当前标签（共%d个）==="), AllTags.Num());
-    
+
     for (const FGameplayTag& Tag : AllTags)
     {
         UE_LOG(LogTemp, Warning, TEXT("  [%s]"), *Tag.ToString());
@@ -616,12 +616,12 @@ void DebugPrintAllTags(UAbilitySystemComponent* ASC)
 void ListAllRegisteredTags()
 {
     UGameplayTagsManager& TagManager = UGameplayTagsManager::Get();
-    
+
     TArray<FGameplayTag> AllTags;
     TagManager.RequestAllGameplayTags(AllTags);
 
     UE_LOG(LogTemp, Warning, TEXT("=== 所有已注册标签（共%d个）==="), AllTags.Num());
-    
+
     for (const FGameplayTag& Tag : AllTags)
     {
         UE_LOG(LogTemp, Warning, TEXT("  %s"), *Tag.ToString());
@@ -652,8 +652,8 @@ if (ASC->HasMatchingGameplayTag(
 if (ASC->HasMatchingGameplayTag(UMyGameplayTags::State_CC)) { ... }
 
 // ❌ 错误：用多个精确标签实现同样的效果
-if (ASC->HasMatchingGameplayTag(StunTag) || 
-    ASC->HasMatchingGameplayTag(RootTag) || 
+if (ASC->HasMatchingGameplayTag(StunTag) ||
+    ASC->HasMatchingGameplayTag(RootTag) ||
     ASC->HasMatchingGameplayTag(FearTag) ||
     ASC->HasMatchingGameplayTag(SilenceTag))
 {

@@ -68,6 +68,7 @@ UObject                                  ← UE对象的根
 ```
 
 > **关键记忆点**：
+>
 > - `UActorComponent`：纯逻辑，看不见摸不着（如移动组件、输入组件）
 > - `USceneComponent`：有位置，但看不见（如相机、弹簧臂）
 > - `UPrimitiveComponent`：有位置 + 看得见 + 碰得到（如模型、碰撞体）
@@ -195,13 +196,13 @@ bool UHealthComponent::IsDead() const
 
 ### UActorComponent的特点
 
-| 特点 | 说明 |
-|------|------|
-| 无Transform | 不能放置在空间中，纯逻辑 |
-| 有BeginPlay | 和Actor一样有生命周期回调 |
-| 有GetOwner() | 可以获取它所属的Actor |
-| 可选Tick | `PrimaryComponentTick.bCanEverTick`控制 |
-| 可被激活/停用 | `SetActive()`, `IsActive()` |
+| 特点          | 说明                                    |
+| ------------- | --------------------------------------- |
+| 无Transform   | 不能放置在空间中，纯逻辑                |
+| 有BeginPlay   | 和Actor一样有生命周期回调               |
+| 有GetOwner()  | 可以获取它所属的Actor                   |
+| 可选Tick      | `PrimaryComponentTick.bCanEverTick`控制 |
+| 可被激活/停用 | `SetActive()`, `IsActive()`             |
 
 ---
 

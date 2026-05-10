@@ -5,6 +5,7 @@
 ---
 
 ## 目录
+
 1. [前置知识确认](#1-前置知识确认)
 2. [创建C++ Widget类](#2-创建c-widget类)
 3. [BindWidget：绑定C++变量到蓝图控件](#3-bindwidget绑定c变量到蓝图控件)
@@ -20,6 +21,7 @@
 ## 1. 前置知识确认
 
 在开始之前，请确保你已经：
+
 - [ ] 至少在编辑器中创建过一个Widget Blueprint
 - [ ] 了解CanvasPanel、Overlay等基本容器
 - [ ] 知道Button、TextBlock、ProgressBar等基本控件
@@ -93,37 +95,45 @@ protected:
 ```cpp
 #include "Blueprint/UserWidget.h"
 ```
+
 这行导入了 `UUserWidget` 类的定义，没有它你就无法继承 `UUserWidget`。
 
 ```cpp
 #include "MainHUD.generated.h"
 ```
+
 这行**必须放在所有include的最后面**，它是UE的反射系统自动生成的头文件。如果把其他include放在它后面，编译会报错！
 
 ```cpp
 UCLASS()
 ```
+
 `UCLASS()` 宏告诉虚幻引擎的反射系统："这个类需要被UE管理"。没有这个宏，你就不能在蓝图中继承这个C++类。
 
 ```cpp
 GENERATED_BODY()
 ```
+
 这是一个占位符，UE在编译前会自动在此处生成大量样板代码（包括 `UClass` 对象的创建、属性注册等）。每个 `UCLASS` 都必须包含它。
 
 ```cpp
 virtual void NativeConstruct() override;
 ```
+
 `NativeConstruct()` 是 `UUserWidget` 提供的一个虚函数，在这个Widget的蓝图完成构造（`Construct`节点之后）时被调用。在这里初始化UI元素是**最安全**的做法，因为此时蓝图中的所有控件都已经创建完毕。
 
 ```cpp
 virtual void NativeDestruct() override;
 ```
+
 `NativeDestruct()` 在Widget即将被销毁时调用。适合在这里做清理工作：取消定时器、取消事件绑定、释放资源等。
 
 ```cpp
 virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 ```
+
 `NativeTick()` 每帧调用一次。`MyGeometry` 包含了Widget的几何信息（位置、大小），`InDeltaTime` 是距离上一帧的时间间隔（秒）。**注意：** 默认情况下Widget不会Tick，需要在构造函数中启用：
+
 ```cpp
 bHasScriptImplementedTick = true; // 在构造函数中启用Tick
 ```
@@ -219,6 +229,7 @@ void UMyWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 ```
 
 ✅ **检查清单 - 2.1~2.4：**
+
 - [ ] 成功创建了一个继承自UUserWidget的C++类
 - [ ] 理解.generated.h必须放在最后
 - [ ] 知道NativeConstruct、NativeDestruct、NativeTick的调用时机
@@ -329,10 +340,10 @@ TObjectPtr<UTextBlock> OptionalText; // ← 这个控件不是必须存在的
 
 **区别总结：**
 
-| 宏 | 蓝图中必须存在？ | 不存在时的行为 |
-|----|-----------------|---------------|
-| `BindWidget` | 是，必须有同名控件 | 编译警告，运行时为nullptr |
-| `BindWidgetOptional` | 否，可以没有 | 运行时为nullptr，不报错 |
+| 宏                   | 蓝图中必须存在？   | 不存在时的行为            |
+| -------------------- | ------------------ | ------------------------- |
+| `BindWidget`         | 是，必须有同名控件 | 编译警告，运行时为nullptr |
+| `BindWidgetOptional` | 否，可以没有       | 运行时为nullptr，不报错   |
 
 ### 3.5 BindWidgetAnim（绑定动画）
 
@@ -350,6 +361,7 @@ TObjectPtr<UWidgetAnimation> OptionalFadeOutAnimation; // ← 可选的动画绑
 ```
 
 **在代码中播放动画：**
+
 ```cpp
 void UMyWidget::PlayFadeIn()
 {
@@ -368,6 +380,7 @@ void UMyWidget::PlayFadeIn()
 ```
 
 ✅ **检查清单 - 3.1~3.5：**
+
 - [ ] 理解BindWidget的作用：C++变量名和蓝图控件名必须一致
 - [ ] 知道如何使用BindWidget在头文件中声明控件变量
 - [ ] 理解BindWidget和BindWidgetOptional的区别
@@ -512,19 +525,20 @@ UUserWidget* GenericWidget = CreateWidget<UUserWidget>(GetWorld(), MainHUDClass)
 
 ### 4.5 CreateWidget常见错误排查
 
-| 错误现象 | 可能原因 | 解决方法 |
-|----------|----------|----------|
-| Widget为空(nullptr) | WidgetClass未设置 | 在蓝图/C++中给WidgetClass赋值 |
-| Widget为空(nullptr) | 路径加载失败 | 检查资源路径是否正确，加上_C后缀 |
-| 控件指针为空 | BindWidget名不匹配 | 确保C++变量名和蓝图控件名完全一致 |
-| 控件指针为空 | 使用了StaticClass | 改用蓝图类（TSubclassOf） |
-| 编译错误 | 头文件未包含 | 包含对应的控件头文件 |
+| 错误现象            | 可能原因           | 解决方法                          |
+| ------------------- | ------------------ | --------------------------------- |
+| Widget为空(nullptr) | WidgetClass未设置  | 在蓝图/C++中给WidgetClass赋值     |
+| Widget为空(nullptr) | 路径加载失败       | 检查资源路径是否正确，加上\_C后缀 |
+| 控件指针为空        | BindWidget名不匹配 | 确保C++变量名和蓝图控件名完全一致 |
+| 控件指针为空        | 使用了StaticClass  | 改用蓝图类（TSubclassOf）         |
+| 编译错误            | 头文件未包含       | 包含对应的控件头文件              |
 
 ✅ **检查清单 - 4.1~4.5：**
+
 - [ ] 理解CreateWidget的三个参数及其含义
 - [ ] 知道推荐使用TSubclassOf + UPROPERTY的方式设置WidgetClass
 - [ ] 理解为什么StaticClass可能导致BindWidget失效
-- [ ] 知道LoadClass路径需要 _C 后缀
+- [ ] 知道LoadClass路径需要 \_C 后缀
 
 ---
 
@@ -552,6 +566,7 @@ void AddToViewport(
 ```
 
 **示例：**
+
 ```cpp
 // 背景层（ZOrder小）
 BackgroundWidget->AddToViewport(0);    // ZOrder = 0，最底层
@@ -618,6 +633,7 @@ void AMyPlayerController::BeginPlay()
 ```
 
 ✅ **检查清单 - 5.1~5.4：**
+
 - [ ] 理解CreateWidget只是创建，AddToViewport才是显示
 - [ ] 知道如何设置ZOrder来控制显示层级
 - [ ] 能完成"创建→检查→AddToViewport"的完整流程
@@ -780,6 +796,7 @@ void AMyPlayerController::HideHUD()
 ```
 
 ✅ **检查清单 - 6.1~6.3：**
+
 - [ ] 理解RemoveFromParent只是从屏幕移除，不销毁Widget对象
 - [ ] 知道IsInViewport()可以检查Widget是否在屏幕上
 - [ ] 知道在AddToViewport前检查是否已经在屏幕上（防止重复添加）
@@ -791,11 +808,11 @@ void AMyPlayerController::HideHUD()
 
 ### 7.1 三种控制Widget可见性的方法
 
-| 方法 | 说明 | 适用场景 |
-|------|------|----------|
-| `AddToViewport / RemoveFromParent` | 添加/移除Widget | 完全不需要Widget时 |
-| `SetVisibility(ESlateVisibility)` | 设置可见性状态 | 临时隐藏但保留Widget |
-| `SetHiddenInGame(bool)` | 隐藏/显示（保留空间） | 隐藏但保留布局占用（较少用） |
+| 方法                               | 说明                  | 适用场景                     |
+| ---------------------------------- | --------------------- | ---------------------------- |
+| `AddToViewport / RemoveFromParent` | 添加/移除Widget       | 完全不需要Widget时           |
+| `SetVisibility(ESlateVisibility)`  | 设置可见性状态        | 临时隐藏但保留Widget         |
+| `SetHiddenInGame(bool)`            | 隐藏/显示（保留空间） | 隐藏但保留布局占用（较少用） |
 
 ### 7.2 SetVisibility：临时显示/隐藏
 
@@ -824,14 +841,14 @@ MyWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 这是一个非常容易混淆的概念，让我用表格清晰说明：
 
-| 枚举值 | 是否可见 | 是否占据空间 | 能否交互（点击） | 典型用途 |
-|--------|----------|-------------|-----------------|----------|
-| `Visible` | 是 | 是 | 能 | 正常显示的UI |
-| `Collapsed` | 否 | **否** | 否 | 隐藏不用的UI（最常用） |
-| `Hidden` | 否 | **是** | 否 | 需要保留布局占位时 |
-| `HitTestInvisible` | 是 | 是 | **否**（自己和子控件都不能点） | 纯显示文字、装饰图案 |
-| `SelfHitTestInvisible` | 是 | 是 | **自己不能点**，但子控件可以 | 容器面板，点穿透到子控件 |
-| `NotHitTestable` | 是 | 是 | **自己不能点**，子控件可单独判断 | 和SelfHitTestInvisible类似 |
+| 枚举值                 | 是否可见 | 是否占据空间 | 能否交互（点击）                 | 典型用途                   |
+| ---------------------- | -------- | ------------ | -------------------------------- | -------------------------- |
+| `Visible`              | 是       | 是           | 能                               | 正常显示的UI               |
+| `Collapsed`            | 否       | **否**       | 否                               | 隐藏不用的UI（最常用）     |
+| `Hidden`               | 否       | **是**       | 否                               | 需要保留布局占位时         |
+| `HitTestInvisible`     | 是       | 是           | **否**（自己和子控件都不能点）   | 纯显示文字、装饰图案       |
+| `SelfHitTestInvisible` | 是       | 是           | **自己不能点**，但子控件可以     | 容器面板，点穿透到子控件   |
+| `NotHitTestable`       | 是       | 是           | **自己不能点**，子控件可单独判断 | 和SelfHitTestInvisible类似 |
 
 **直观理解：**
 
@@ -896,6 +913,7 @@ bool UInventoryWidget::IsInventoryOpen() const
 ```
 
 ✅ **检查清单 - 7.1~7.5：**
+
 - [ ] 理解SetVisibility和AddToViewport/RemoveFromParent的区别
 - [ ] 知道Collapsed和Hidden的区别（是否占据空间）
 - [ ] 知道HitTestInvisible的作用（可见但鼠标穿透）
@@ -1255,6 +1273,7 @@ void AWeapon::Fire()
 ```
 
 ✅ **检查清单 - 8.1~8.5：**
+
 - [ ] 理解HUD的完整创建流程（6个步骤）
 - [ ] 能编写MainHUD类的完整代码
 - [ ] 能在PlayerController中管理HUD的创建和销毁
@@ -1586,6 +1605,7 @@ PauseMenuWidget->AddToViewport(UIZOrder::Menu);       // ZOrder = 80
 ```
 
 ✅ **检查清单 - 9.1~9.4：**
+
 - [ ] 理解为什么需要UI管理器
 - [ ] 能编写基本的UIManager类
 - [ ] 理解ZOrder分层策略

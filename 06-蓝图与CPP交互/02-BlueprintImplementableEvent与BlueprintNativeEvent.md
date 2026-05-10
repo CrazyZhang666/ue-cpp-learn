@@ -1,12 +1,13 @@
 # 6.2 BlueprintImplementableEvent 与 BlueprintNativeEvent
 
-> **目标**：彻底掌握两种"C++定义签名、蓝图实现逻辑"的函数类型，理解 _Implementation 后缀的规则，学会根据项目需求选择正确的事件类型。
+> **目标**：彻底掌握两种"C++定义签名、蓝图实现逻辑"的函数类型，理解 \_Implementation 后缀的规则，学会根据项目需求选择正确的事件类型。
 
 ---
 
 ## 本章前置知识
 
 在学习本章之前，你应该已经掌握：
+
 - UFUNCTION 宏的基本用法（第3.4节）
 - BlueprintCallable 和 BlueprintPure 的区别（上一节）
 - C++ 的继承与多态概念（第2.4节）
@@ -112,13 +113,16 @@ void AMyActor::Die()
 **步骤1**：编译C++代码（点击UE编辑器中的"编译"按钮）
 
 **步骤2**：创建一个继承自 `AMyActor` 的蓝图类
+
 - 在内容浏览器中右键 → 蓝图类 → 选择父类 `MyActor`
 
 **步骤3**：打开蓝图，在事件图表中
+
 - 右键菜单中搜索函数名（如 `OnHealthChanged`）
 - 找到后拖入图表，它会自动作为一个**事件节点**出现
 
 蓝图中的事件节点看起来像这样：
+
 ```
 ┌──────────────────────┐
 │  Event OnHealthChanged │  ← 红色标题栏（事件节点）
@@ -130,9 +134,11 @@ void AMyActor::Die()
 ```
 
 **步骤4**：编写蓝图逻辑
+
 - 从执行输出引脚连线，可以连接：打印字符串、更新UI、播放音效等蓝图节点
 
 **步骤5**：运行游戏
+
 - 当C++中的 `TakeDamage` 被调用时，会自动触发蓝图中的 `OnHealthChanged` 事件
 
 ### 2.4 带返回值的 ImplementableEvent
@@ -260,10 +266,11 @@ void ASwitchActor::Interact()
 - **调用时：蓝图优先**——如果蓝图覆写了，执行蓝图版本；否则执行C++默认版本
 
 这好比：
+
 - `ImplementableEvent` = "蓝图你必须写实现"（不写就什么都不发生）
 - `NativeEvent` = "C++有默认方案，蓝图你可以选要不要改"
 
-### 3.2 基本语法：_Implementation 后缀规则
+### 3.2 基本语法：\_Implementation 后缀规则
 
 这是 BlueprintNativeEvent 最重要的规则，必须牢记：
 
@@ -335,6 +342,7 @@ void AMyActor::PlayHitReaction(FVector HitLocation, float DamageAmount)
 ```
 
 这解释了为什么：
+
 - 声明用原始函数名
 - 实现用 `_Implementation` 后缀
 - 调用用原始函数名（引擎帮你分派）
@@ -384,6 +392,7 @@ void AMyCharacter::PlayHitReaction_Implementation(FVector HitLocation, float Dam
 2. **覆写**：在蓝图事件图表中添加这个事件并写逻辑
 
 **覆写步骤：**
+
 - 打开蓝图 → 事件图表 → 右键搜索函数名（如 `PlayHitReaction`）
 - 会出现一个**覆盖（Override）**选项
 - 选中后，事件节点出现在图表中
@@ -391,6 +400,7 @@ void AMyCharacter::PlayHitReaction_Implementation(FVector HitLocation, float Dam
 - 如果要调用父类（C++）的默认实现，右键节点选择"Add call to parent"
 
 蓝图中的覆写节点：
+
 ```
 ┌─────────────────────────────┐
 │  覆盖自 PlayHitReaction      │  ← 带"覆盖自"前缀
@@ -420,6 +430,7 @@ void AMyCharacter::PlayHitReaction_Implementation(FVector HitLocation, float Dam
 ```
 
 在蓝图中覆写时：
+
 - 从 "父类: PlayHitReaction" 引脚连线 → C++默认动画照常播放
 - 从 "执行输出" 引脚连线 → 蓝图中额外添加火花粒子、屏幕震动等
 - 这样：动画由C++负责，特效由蓝图负责，各司其职
@@ -430,14 +441,14 @@ void AMyCharacter::PlayHitReaction_Implementation(FVector HitLocation, float Dam
 
 ### 4.1 核心对比表
 
-| 对比维度 | BlueprintImplementableEvent | BlueprintNativeEvent |
-|----------|----------------------------|----------------------|
-| C++默认实现 | ❌ 不允许 | ✅ 必须有（`_Implementation`） |
-| 蓝图中不覆写 | 什么也不发生 | C++默认实现正常执行 |
-| 蓝图中覆写后 | 完全取代（C++无实现可取代） | 取代C++默认实现 |
-| 是否可以调用父类实现 | ❌ 不能（因为C++没有实现） | ✅ 可以（`Add call to parent`） |
-| UHT生成函数体 | 空函数体 | 检查蓝图→分派函数体 |
-| 适用场景 | 纯表现层逻辑 | 有默认行为的逻辑 |
+| 对比维度             | BlueprintImplementableEvent | BlueprintNativeEvent            |
+| -------------------- | --------------------------- | ------------------------------- |
+| C++默认实现          | ❌ 不允许                   | ✅ 必须有（`_Implementation`）  |
+| 蓝图中不覆写         | 什么也不发生                | C++默认实现正常执行             |
+| 蓝图中覆写后         | 完全取代（C++无实现可取代） | 取代C++默认实现                 |
+| 是否可以调用父类实现 | ❌ 不能（因为C++没有实现）  | ✅ 可以（`Add call to parent`） |
+| UHT生成函数体        | 空函数体                    | 检查蓝图→分派函数体             |
+| 适用场景             | 纯表现层逻辑                | 有默认行为的逻辑                |
 
 ### 4.2 决策流程图
 
@@ -608,7 +619,7 @@ public:
     // C++默认实现：播放通用的人类受击动画
 
     virtual void PlayHitReaction_Implementation(FVector HitDirection, float Damage);
-    //       ──── 注意加了virtual ──── 
+    //       ──── 注意加了virtual ────
     // 允许C++子类也覆写 _Implementation
 
     // 角色死亡时的处理 —— ImplementableEvent，每种子类自己在蓝图中定义
@@ -668,6 +679,7 @@ public:
 ### 7.1 设计思路
 
 我们要创建一个技能基类，让**C++程序员**和**蓝图设计师**可以各自发挥所长：
+
 - C++程序员负责：核心底层逻辑（资源消耗、冷却计算、伤害公式）
 - 蓝图设计师负责：视觉表现（特效、动画、音效）
 
@@ -1047,13 +1059,13 @@ class AChild : public AParent
 
 ### 8.2 最佳实践速查
 
-| 场景 | 推荐做法 |
-|------|---------|
-| 纯视觉表现（音效、特效、动画） | `BlueprintImplementableEvent` |
-| 核心逻辑 + 可选定制（伤害公式、AI决策） | `BlueprintNativeEvent` |
-| 不确定蓝图是否需要覆写 | `BlueprintNativeEvent`（给默认行为更安全） |
-| 需要在C++子类中覆写默认实现 | `BlueprintNativeEvent` + 加 `virtual` |
-| 多个蓝图子类各自表现不同 | `BlueprintImplementableEvent`（每个子类各自实现） |
+| 场景                                    | 推荐做法                                          |
+| --------------------------------------- | ------------------------------------------------- |
+| 纯视觉表现（音效、特效、动画）          | `BlueprintImplementableEvent`                     |
+| 核心逻辑 + 可选定制（伤害公式、AI决策） | `BlueprintNativeEvent`                            |
+| 不确定蓝图是否需要覆写                  | `BlueprintNativeEvent`（给默认行为更安全）        |
+| 需要在C++子类中覆写默认实现             | `BlueprintNativeEvent` + 加 `virtual`             |
+| 多个蓝图子类各自表现不同                | `BlueprintImplementableEvent`（每个子类各自实现） |
 
 ---
 

@@ -38,20 +38,20 @@ void AMyCharacter::CastFireball()
         DebugMessage("法力不足！");
         return;
     }
-    
+
     // 2. 减去法力消耗
     Mana -= FireballCost;
-    
+
     // 3. 启动冷却计时器
     if (bIsOnCooldown)
     {
         DebugMessage("技能冷却中！");
         return;
     }
-    GetWorldTimerManager().SetTimer(CooldownTimer, this, 
+    GetWorldTimerManager().SetTimer(CooldownTimer, this,
         &AMyCharacter::OnFireballCooldownEnd, CooldownTime, false);
     bIsOnCooldown = true;
-    
+
     // 4. 检查是否被眩晕
     if (bIsStunned)
     {
@@ -59,20 +59,20 @@ void AMyCharacter::CastFireball()
         Mana += FireballCost;  // 别忘了还回法力！
         return;
     }
-    
+
     // 5. 创建火球生成逻辑
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
     AFireballProjectile* Fireball = GetWorld()->SpawnActor<AFireballProjectile>(
         FireballClass, GetActorLocation(), GetActorRotation(), SpawnParams);
-    
+
     // 6. 处理网络同步（各端都要看到火球）
     if (HasAuthority())
     {
         // 服务器端逻辑
         MulticastSpawnFireball(Fireball->GetActorLocation());
     }
-    
+
     // ...每个技能都要写类似的代码，而且分散在角色类的各处
     // ...策划想改个冷却时间？重新编译！
     // ...加个新技能？需要改角色类代码！
@@ -97,10 +97,10 @@ void AMyCharacter::CastFireball()
 void UFireballAbility::ActivateAbility(...)
 {
     // GAS已经帮你检查了：法力够不够、是否冷却中、是否被眩晕
-    
+
     // 你只需要写技能本身的核心逻辑
     SpawnFireball();  // 生成火球
-    
+
     CommitAbility();  // 提交技能——GAS自动处理消耗和冷却
     EndAbility();     // 结束技能——GAS自动清理状态标签
 }
@@ -147,7 +147,7 @@ class AMyCharacter : public ACharacter
     float AttackPower = 10.0f;
     float Defense = 5.0f;
     float MoveSpeed = 600.0f;
-    
+
     // 问题1：每个变量都要单独处理网络同步（Replicated）
     // 问题2：Buff加成很难追踪（"攻击力+20%"来自哪个Buff？）
     // 问题3：临时修改和永久修改混在一起（装备加成 vs 技能Buff）
@@ -168,13 +168,13 @@ public:
     // 每个属性都使用FGameplayAttributeData——GAS内置类型
     UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health)
     FGameplayAttributeData Health;     // 当前生命值
-    
+
     UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth)
     FGameplayAttributeData MaxHealth;  // 最大生命值
-    
+
     UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AttackPower)
     FGameplayAttributeData AttackPower; // 攻击力
-    
+
     // GAS自动追踪：这个属性的当前值 = BaseValue + 所有Active GE的修改之和
     // 当某个Buff到期时，它的加成会自动移除，不需要手动处理
 };
@@ -259,7 +259,7 @@ class AMyCharacter : public ACharacter
     bool bIsRooted = false;        // 是否被定身
     bool bIsFlying = false;        // 是否飞行中
     bool bIsStealthed = false;     // 是否隐身中
-    
+
     // 问题1：每加一个新状态就要加一个bool变量
     // 问题2："所有控制效果" = bIsStunned || bIsRooted || bIsSilenced || ...
     //        每加一个控制效果都要更新这个判断
@@ -282,7 +282,7 @@ class AMyCharacter : public ACharacter
 
     查询"是否有任何控制效果" → 只需检查 HasTag(State.CC)
     查询"能否释放技能"     → 只需检查 !HasTag(State.CC)
-    
+
     新增"沉睡"状态 → 加个 State.CC.Sleep 即可，不需要改任何代码！
 ```
 
@@ -318,13 +318,13 @@ State.Dead               ← 死亡
 
 **GAS的解决方案**：GAS在设计之初就是为多人游戏而生的。它内置了：
 
-| GAS的网络功能 | 说明 |
-|-------------|------|
+| GAS的网络功能    | 说明                                                  |
+| ---------------- | ----------------------------------------------------- |
 | **属性自动同步** | AttributeSet中的属性可以用 `ReplicatedUsing` 自动同步 |
-| **预测系统** | 客户端可以"预测"技能激活，服务器验证后确认或回滚 |
-| **服务器权威** | 所有属性修改最终由服务器确认，客户端输入只是"请求" |
-| **GameplayCue** | 统一的视觉/音效反馈机制，自动处理同步/预测 |
-| **GE的同步** | 预测类GE（Predicted）可以本地先应用再等服务器确认 |
+| **预测系统**     | 客户端可以"预测"技能激活，服务器验证后确认或回滚      |
+| **服务器权威**   | 所有属性修改最终由服务器确认，客户端输入只是"请求"    |
+| **GameplayCue**  | 统一的视觉/音效反馈机制，自动处理同步/预测            |
+| **GE的同步**     | 预测类GE（Predicted）可以本地先应用再等服务器确认     |
 
 ```
 客户端预测的流程：
@@ -425,7 +425,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
 ═══════════════════════════════════════════════════════════════════════════
 
   类比：MVC中的Controller（控制器）
-  
+
   职责：
   ┌─────────────────────────────────────────────┐
   │  • 管理所有技能（GA）的授予、激活、取消     │
@@ -445,7 +445,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
 ═══════════════════════════════════════════════════════════════════════════
 
   类比：一个技能的"蓝图"或"说明书"
-  
+
   每个GA就是一个独立的技能：
   ┌─────────────────────────────────────────────┐
   │  UGA_Fireball    → 火球术                   │
@@ -456,7 +456,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
   └─────────────────────────────────────────────┘
 
   GA不直接存储数据（伤害值等），而是通过GE来"声明"它想要做什么。
-  
+
   一个GA的生命周期：
   给予(Give) → 激活(Activate) → 执行 → 提交(Commit) → 结束(End)/取消(Cancel)
 
@@ -466,7 +466,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
 ═══════════════════════════════════════════════════════════════════════════
 
   类比：一个"效果配方"——定义了"对属性做什么修改"
-  
+
   GE不是直接在代码中操作属性，而是声明式地描述修改：
 
   "我想把目标的Health属性减少50（基于攻击力计算）"
@@ -487,9 +487,9 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
 ═══════════════════════════════════════════════════════════════════════════
 
   类比：给角色贴"便利贴"，用来标记各种状态
-  
+
   标签格式：Parent.Child.GrandChild（层级制）
-  
+
   示例：
   State.Dead               ← 死亡状态
   State.CC.Stun            ← 眩晕（CC = Crowd Control）
@@ -510,7 +510,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
 ═══════════════════════════════════════════════════════════════════════════
 
   类比：D&D角色卡上的属性栏
-  
+
   包含所有"数值属性"：
   ┌─────────────────────────────────────────────┐
   │  Health（生命值）     MaxHealth（最大生命）   │
@@ -524,7 +524,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
   每个属性都有：
   • BaseValue（基础值）：装备、等级带来的永久加成
   • CurrentValue（当前值）：BaseValue + 所有临时GE的加成之和
-  
+
   属性变化时触发回调：
   • PreAttributeChange：修改前回调（用于Clamp，限制值域）
   • PostGameplayEffectExecute：GE生效后回调（用于处理死亡等逻辑）
@@ -535,7 +535,7 @@ const float BuffDuration = 10.0f;        // 改持续时间要重新编译！
 ═══════════════════════════════════════════════════════════════════════════
 
   类比：技能的表现层——"技能看起来和听起来是什么样的"
-  
+
   GC和GE是分离的：
   ┌─────────────────────────────────────────────┐
   │  GE负责逻辑：伤害值是多少、Buff持续多久       │
@@ -680,7 +680,7 @@ public class MyGame : ModuleRules
             "CoreUObject",
             "Engine",
             "InputCore",
-            
+
             // ===== GAS相关模块 =====
             "GameplayAbilities",   // GAS核心：GA、GE、ASC、AttributeSet
             "GameplayTags",        // GameplayTag系统
@@ -700,10 +700,10 @@ public class MyGame : ModuleRules
 
 GAS需要启用以下插件（编辑器菜单：Edit → Plugins）：
 
-| 插件名 | 是否必须 | 说明 |
-|--------|---------|------|
-| **Gameplay Abilities** | ✅ 必须 | GAS的核心插件 |
-| **GameplayTags Editor** | ✅ 推荐 | 在编辑器中管理GameplayTag的UI |
+| 插件名                  | 是否必须 | 说明                          |
+| ----------------------- | -------- | ----------------------------- |
+| **Gameplay Abilities**  | ✅ 必须  | GAS的核心插件                 |
+| **GameplayTags Editor** | ✅ 推荐  | 在编辑器中管理GameplayTag的UI |
 
 ### ⚠️ 常见错误
 
@@ -789,14 +789,14 @@ PublicDependencyModuleNames.Add("GameplayAbilities");
 
 ## 本章核心概念速查
 
-| 组件 | 英文全称 | 一句话解释 |
-|------|---------|-----------|
+| 组件    | 英文全称               | 一句话解释                     |
+| ------- | ---------------------- | ------------------------------ |
 | **ASC** | AbilitySystemComponent | 大脑/调度中心，管理所有GAS功能 |
-| **GA** | GameplayAbility | 技能的"蓝图"，定义技能做什么 |
-| **GE** | GameplayEffect | 效果的"配方"，定义属性怎么改 |
-| **GT** | GameplayTag | 层级标签，标记状态和条件 |
-| **AS** | AttributeSet | 属性集合，存储角色的数值属性 |
-| **GC** | GameplayCue | 表现层，播放特效/音效/动画 |
+| **GA**  | GameplayAbility        | 技能的"蓝图"，定义技能做什么   |
+| **GE**  | GameplayEffect         | 效果的"配方"，定义属性怎么改   |
+| **GT**  | GameplayTag            | 层级标签，标记状态和条件       |
+| **AS**  | AttributeSet           | 属性集合，存储角色的数值属性   |
+| **GC**  | GameplayCue            | 表现层，播放特效/音效/动画     |
 
 ---
 
