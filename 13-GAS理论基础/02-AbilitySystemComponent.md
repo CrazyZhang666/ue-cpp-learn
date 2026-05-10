@@ -1,8 +1,6 @@
 # 13.2 AbilitySystemComponent (ASC)
 
 > **目标**：深入理解GAS的大脑——AbilitySystemComponent的创建、配置、放置策略和核心API。
-> **难度**：⭐⭐⭐（核心理解级）
-> **重要性**：⭐⭐⭐⭐⭐（ASC是连接所有GAS组件的枢纽）
 
 ---
 
