@@ -279,7 +279,7 @@ void AMyActor::Die()
     //       ↑
     // 调用Destroy()后，Actor进入"待销毁"状态
     // 它不会在本帧立即消失，但：
-    // - IsPendingKill() 返回 true
+    // - IsValid(Actor) 会返回 false
     // - 不能再被查找（GetAllActorsOfClass不会返回它）
     // - 在下一帧的GC中真正释放内存
 
@@ -293,10 +293,8 @@ void AMyActor::Die()
 // 安全检查：Actor是否有效
 void AMyActor::CheckSafety(AActor* OtherActor)
 {
-    // ✅ 安全检查三部曲
-    if (OtherActor                              // 1. 不是nullptr
-        && IsValid(OtherActor)                  // 2. 不是PendingKill
-        && !OtherActor->IsPendingKill())         // 3. 没被标记为待销毁
+    // ✅ 安全检查：IsValid 同时检查 nullptr 和"待销毁"
+    if (IsValid(OtherActor))
     {
         // 安全使用
         OtherActor->SetActorLocation(FVector::ZeroVector);
@@ -457,12 +455,12 @@ SetActorTransform(NewTransform);
 
 ```cpp
 // ❌ 错误1：不理解SetActorLocation的返回值
-// SetActorLocation(FVector, bool* SweepHitResult)
-// 返回bool表示是否成功放置（发生了碰撞并调整位置时也可能返回true）
+// SetActorLocation(NewLocation, bSweep, SweepHitResult, Teleport)
+// 返回bool表示移动是否成功（如果开启Sweep并被阻挡，可能返回false）
 bool bSuccess = SetActorLocation(NewLocation, false, nullptr, ETeleportType::None);
 if (!bSuccess)
 {
-    // 位置可能仍然被设置了（Sweep检测到碰撞并调整了位置）
+    // 关闭Sweep时通常会直接设置位置；开启Sweep时可能因为阻挡而无法到达目标点
     // 不要仅凭返回值判断"是否移动了"
 }
 
@@ -743,11 +741,8 @@ void AMyActor::FindGameMode()
     UWorld* World = GetWorld();
     if (!World) return;
 
-    // 获取场景中的GameMode（通常只有一个）
-    AGameModeBase* GameMode = UGameplayStatics::GetActorOfClass(
-        World,
-        AGameModeBase::StaticClass()
-    );
+    // 获取当前世界的GameMode（只在服务器端有效）
+    AGameModeBase* GameMode = World->GetAuthGameMode();
 
     if (GameMode)
     {
