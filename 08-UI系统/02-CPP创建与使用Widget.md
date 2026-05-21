@@ -4,6 +4,35 @@
 
 ---
 
+## 新手先读：本节怎么学
+
+这节内容很长，但主线只有一条：
+
+```
+C++ Widget类
+    ↓
+Widget Blueprint继承它
+    ↓
+BindWidget把蓝图控件接到C++变量
+    ↓
+CreateWidget创建实例
+    ↓
+AddToViewport显示到屏幕
+    ↓
+RemoveFromParent或SetVisibility控制显示状态
+```
+
+第一遍学习时，你只需要先记住：
+
+| 问题 | 先记住的答案 |
+| ---- | ------------ |
+| Widget在哪里写逻辑？ | 复杂逻辑写在C++的`UUserWidget`子类中 |
+| 蓝图控件怎么被C++访问？ | 用`UPROPERTY(meta = (BindWidget))`，变量名必须和蓝图控件名一致 |
+| Widget什么时候显示？ | `CreateWidget`只创建，`AddToViewport`才显示 |
+| 频繁开关界面用什么？ | 优先`SetVisibility`，不是反复创建销毁 |
+
+> **阅读建议**：第2-5节按顺序照做；第6-7节先理解概念；第8-9节作为完整模板，后面做项目时再回来查。
+
 ## 目录
 
 1. [前置知识确认](#1-前置知识确认)

@@ -6,7 +6,7 @@
 
 ## 什么是UObject？
 
-`UObject` 是UE中**几乎所有类的最终基类**。它是UE在标准C++之上构建的一套"增强对象系统"。
+`UObject` 是UE中**大多数引擎对象类型的共同基类**，例如Actor、Component、Asset和Subsystem。它不是所有C++类型的基类：`FVector`、`FString`、`TArray`、Slate控件等很多类型并不继承`UObject`。可以把它理解为UE在标准C++之上构建的一套"增强对象系统"。
 
 ```
 标准C++对象:                    UE对象:
@@ -28,9 +28,9 @@
 | 超能力                      | 含义                     | 对开发者的好处               |
 | --------------------------- | ------------------------ | ---------------------------- |
 | **反射（Reflection）**      | 运行时知道类的成员       | 编辑器细节面板自动显示属性   |
-| **垃圾回收（GC）**          | 自动回收不再使用的对象   | 不用手动delete，告别内存泄漏 |
+| **垃圾回收（GC）**          | 回收不可达的UObject对象  | UObject通常不用手动delete，但仍要正确保存引用 |
 | **序列化（Serialization）** | 自动保存/加载对象        | 存档系统自动工作             |
-| **网络复制（Replication）** | 自动同步到客户端         | 多人游戏不用手写同步代码     |
+| **网络复制（Replication）** | 按规则把指定状态同步到客户端 | 少写底层网络包，但仍要配置Replicated/RPC |
 | **蓝图交互**                | C++类可在蓝图中使用      | 策划/美术也能使用你的C++代码 |
 | **编辑器集成**              | 属性在编辑器中可视化编辑 | 调数值不用重新编译           |
 
@@ -39,7 +39,7 @@
 ## UObject的类层次结构
 
 ```
-UObject                           ← 所有UE对象的基类
+UObject                           ← 大多数UE对象系统类型的基类
 ├── UActorComponent               ← 组件的基类
 │   ├── USceneComponent           ← 有Transform的组件
 │   │   ├── UPrimitiveComponent   ← 可渲染/碰撞的组件
@@ -56,7 +56,7 @@ UObject                           ← 所有UE对象的基类
 │   │   └── ...
 │   └── ...
 ├── UGameInstance                 ← 游戏实例（跨关卡）
-├── UGameMode                     ← 游戏规则
+├── AGameModeBase / AGameMode     ← 游戏规则（它们也是Actor）
 └── ...（数百种其他类型）
 ```
 
@@ -84,7 +84,7 @@ class MYPROJECT_API UMyObject : public UObject  // 规则2: 类名以 U 开头
 public:
     UMyObject();  // 构造函数
 
-    // 规则4: 成员变量需要UPROPERTY
+    // 规则4: 需要被反射/序列化/GC识别的成员变量才加UPROPERTY
     UPROPERTY()
     int32 MyValue;
 
@@ -102,7 +102,7 @@ public:
 | `UCLASS()` 宏              | 标记为UE类         | 不能用UE功能             |
 | `GENERATED_BODY()`         | 生成反射代码       | 编译报错（几百个错误！） |
 | `.generated.h` 最后include | UHT生成的文件      | 编译报错                 |
-| `UPROPERTY()` 标记成员     | GC保护 + 反射可见  | 野指针崩溃/编辑器不可见  |
+| `UPROPERTY()` 标记成员     | GC可追踪 + 反射可见 | UObject引用失去保护/编辑器不可见 |
 
 ---
 
@@ -125,11 +125,11 @@ UMyObject StackObj;  // 编译报错！UObject不允许栈分配
 
 // 方法1：NewObject<T>() — 最常用
 UMyObject* Obj = NewObject<UMyObject>();
-// NewObject返回的指针由UE的GC管理，你不应该手动delete
+// NewObject返回的UObject由UE的GC销毁，但你仍需要用UPROPERTY等方式保存强引用
 
-// 方法2：NewObject带Outer（指定"所有者"）
-UMyObject* Obj = NewObject<UMyObject>(OuterActor);  // OuterActor是这个Obj的所有者
-// Outer被销毁时，Obj也会被GC回收
+// 方法2：NewObject带Outer（指定命名/生命周期上下文）
+UMyObject* Obj = NewObject<UMyObject>(OuterActor);  // OuterActor提供命名/生命周期上下文
+// 注意：Outer不是UPROPERTY的替代品；长期持有对象时仍要用UPROPERTY保存引用
 
 // 方法3：CreateDefaultSubobject（仅在Actor/Component构造函数中）
 UMyComponent* Comp = CreateDefaultSubobject<UMyComponent>(TEXT("MyComp"));

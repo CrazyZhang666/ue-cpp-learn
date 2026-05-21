@@ -37,7 +37,9 @@
 | -------------------- | ---------- | ------------ | -------------------------- |
 | **Server RPC**       | 客户端     | 服务器       | 客户端请求开火、拾取物品   |
 | **Client RPC**       | 服务器     | 拥有者客户端 | 显示伤害数字、播放特定声音 |
-| **NetMulticast RPC** | 服务器     | 所有客户端   | 播放枪口火焰、爆炸特效     |
+| **NetMulticast RPC** | 服务器     | 服务器和相关客户端 | 播放枪口火焰、爆炸特效     |
+
+> **注意**：NetMulticast 只有在服务器对一个会复制的Actor调用时，才会发送到相关客户端。客户端自己调用Multicast函数时，不会自动广播给其他机器。
 
 ### RPC 的声明语法
 
@@ -50,7 +52,7 @@ void ServerDoSomething();
 UFUNCTION(Client, Reliable)
 void ClientShowMessage(const FString& Message);
 
-// NetMulticast RPC — 服务器调用，所有客户端执行
+// NetMulticast RPC — 服务器调用，服务器和相关客户端执行
 UFUNCTION(NetMulticast, Reliable)
 void MulticastPlayEffect(FVector Location);
 ```
@@ -91,19 +93,19 @@ public:
     // 声明一个 Server RPC 函数
     // 客户端调用此函数请求开火
     // 服务器验证后执行真正的开火逻辑
-    UFUNCTION(Server, Reliable)      // ← Server 标志：表示这是 Server RPC
-    void ServerFireWeapon();         //   Reliable 标志：保证送达
+    UFUNCTION(Server, Reliable, WithValidation)  // ← Server：客户端请求服务器执行；WithValidation：生成验证入口
+    void ServerFireWeapon();         //   Reliable：连接正常时会重传直到确认，别用于高频事件
 
-    // ☆ 重要：Server RPC 必须在 .cpp 中实现以下两个函数：
+    // ☆ 重要：带 WithValidation 的 Server RPC 必须在 .cpp 中实现以下两个函数：
     //   1. ServerFireWeapon_Implementation() — 服务器端的实际执行逻辑
-    //   2. ServerFireWeapon_Validate()      — 服务器端的参数验证（可选但推荐）
+    //   2. ServerFireWeapon_Validate()      — 服务器端的参数验证
 
     // ============================================
     // 带参数的 Server RPC
     // ============================================
 
     // 客户端请求在指定位置使用指定类型的武器开火
-    UFUNCTION(Server, Reliable)
+    UFUNCTION(Server, Reliable, WithValidation)
     void ServerFireAtTarget(FVector TargetLocation, int32 WeaponType);
 
     // ============================================
@@ -157,7 +159,7 @@ void AMyCharacter::ServerFireWeapon_Implementation()
     // ===== 步骤3：记录日志 =====
     UE_LOG(LogTemp, Log, TEXT("服务器：玩家开火！剩余弹药：%d"), CurrentAmmo);
 
-    // 注意：CurrentAmmo 如果是 Replicated 属性，减少后的值会自动同步到客户端
+    // 注意：CurrentAmmo 如果是 Replicated 属性，服务器修改后会在后续复制更新中同步到客户端
 }
 
 // 验证函数 — 服务器在执行 _Implementation 之前调用
@@ -265,8 +267,8 @@ void AMyCharacter::ServerMoveToLocation_Implementation(
     // 注意：位置变化通过属性同步自动通知其他客户端
 }
 
-// Unreliable RPC 不需要 Validate（可选的，但通常不加）
-// 因为 Unreliable RPC 频率太高，加验证会影响性能
+// 这个Unreliable RPC没有写WithValidation，所以只需要_Implementation
+// 仍然要在_Implementation内部做必要校验，尤其是客户端传来的位置/角度数据
 
 /// ============================================
 // 辅助函数：服务器端实际开火
@@ -324,12 +326,12 @@ void AMyCharacter::SomeServerFunction()
 
 ```cpp
 // 声明：
-UFUNCTION(Server, Reliable)    // 或 Unreliable
+UFUNCTION(Server, Reliable, WithValidation)    // 需要_Validate时才加WithValidation
 void ServerXxx();
 
 // 必须实现的函数：
 void ServerXxx_Implementation();  // 服务器执行的实际逻辑
-bool ServerXxx_Validate();        // 参数验证（可选但强烈推荐）
+bool ServerXxx_Validate();        // 只有声明里写了WithValidation时才需要
 
 // 调用者：客户端（AutonomousProxy）
 // 执行者：服务器
@@ -501,11 +503,11 @@ void AMyCharacter::SomeClientFunction()
 //   3. 服务器对A造成伤害 → 对A调用 Client RPC（ClientShowDamageNumber）
 //   4. 服务器对B造成伤害 → 对B调用 Client RPC（ClientShowDamageNumber）
 //   5. 服务器调用 NetMulticast RPC（MulticastPlayMuzzleFlash）
-//      所有客户端都看到枪口火焰
+//      相关客户端都看到枪口火焰
 
 // Server RPC：客户端→服务器（"请求"）
 // Client RPC：服务器→特定客户端（"通知"）
-// NetMulticast RPC：服务器→所有客户端（"广播"）
+// NetMulticast RPC：服务器→服务器和相关客户端（"广播"）
 ```
 
 ---
@@ -514,12 +516,12 @@ void AMyCharacter::SomeClientFunction()
 
 ### 核心理解
 
-NetMulticast RPC 用于"广播"消息给所有客户端：
+NetMulticast RPC 用于从服务器向相关客户端"广播"一次性事件：
 
 1. **服务器**调用 `MulticastPlayEffect()`。
-2. 调用通过网络发送到**所有连接的客户端**（包括 Listen Server 的本地玩家）。
-3. **所有客户端**都执行这个函数。
-4. 客户端不能调用 NetMulticast RPC（即使写了也会被忽略）。
+2. 调用通过网络发送到这个复制Actor的**相关客户端**（Listen Server本地也会执行）。
+3. 服务器和收到该Actor复制的客户端都会执行这个函数。
+4. 客户端调用 NetMulticast RPC 只会在本地执行，不会广播给服务器或其他客户端。
 
 ### 完整代码示例
 
@@ -532,14 +534,14 @@ class MYGAME_API AMyCharacter : public ACharacter
 
 public:
     /// ============================================
-    // NetMulticast RPC — 服务器调用，所有客户端执行
+    // NetMulticast RPC — 服务器调用，服务器和相关客户端执行
     /// ============================================
 
-    // 所有客户端都播放枪口火焰特效
+    // 相关客户端都播放枪口火焰特效
     UFUNCTION(NetMulticast, Reliable)
     void MulticastPlayMuzzleFlash();
 
-    // 所有客户端都播放爆炸特效（带位置参数）
+    // 相关客户端都播放爆炸特效（带位置参数）
     UFUNCTION(NetMulticast, Reliable)
     void MulticastPlayExplosion(FVector ExplosionLocation, float ExplosionRadius);
 
@@ -674,9 +676,9 @@ void AMyCharacter::OnClientTriesToBroadcast()
 {
     if (!HasAuthority())
     {
-        // 客户端调用多播 RPC 会被 UE 忽略！
-        // 多播 RPC 只能从服务器发起
-        MulticastPlayMuzzleFlash();  // ← 什么都不会发生！
+        // 客户端调用多播 RPC 只会在本地执行，不会广播给服务器或其他客户端
+        // 真正的多播必须由服务器在可复制Actor上发起
+        MulticastPlayMuzzleFlash();  // ← 只影响本机，不是网络广播
     }
 }
 ```
@@ -688,7 +690,7 @@ void AMyCharacter::OnClientTriesToBroadcast()
 ### 核心对比
 
 ```cpp
-// Reliable（可靠）：保证送达，保证顺序
+// Reliable（可靠）：连接正常时重传直到确认，并保持顺序
 UFUNCTION(Server, Reliable)
 void ServerImportantAction();
 
@@ -1284,8 +1286,8 @@ void MulticastAnnounceKill(ACharacter* K, ACharacter* V); // 击杀广播
 
 在本章中，你学到了：
 
-1. **三种 RPC 类型**：Server（客户端→服务器）、Client（服务器→拥有者客户端）、NetMulticast（服务器→所有客户端）。
-2. **Server RPC 的 \_Implementation 和 \_Validate**：服务器执行的实际逻辑和参数验证。
+1. **三种 RPC 类型**：Server（客户端→服务器）、Client（服务器→拥有者客户端）、NetMulticast（服务器→服务器和相关客户端）。
+2. **Server RPC 的 \_Implementation 和 \_Validate**：`_Implementation` 是实际逻辑；只有声明了 `WithValidation` 时才需要 `_Validate`。
 3. **Reliable vs Unreliable**：重要事件用 Reliable，高频更新用 Unreliable。
 4. **属性同步**：`UPROPERTY(Replicated)` 和 `UPROPERTY(ReplicatedUsing=OnRep_Xxx)`。
 5. **DOREPLIFETIME 和 DOREPLIFETIME_CONDITION**：注册同步属性，可选条件。
@@ -1297,7 +1299,7 @@ void MulticastAnnounceKill(ACharacter* K, ACharacter* V); // 击杀广播
 请逐项确认你已经理解：
 
 - [ ] 我能用自己的话解释 Server RPC、Client RPC、NetMulticast RPC 的区别。
-- [ ] 我知道 Server RPC 的 `_Implementation` 在服务器执行，`_Validate` 用于参数验证。
+- [ ] 我知道 Server RPC 的 `_Implementation` 在服务器执行，`WithValidation` 对应的 `_Validate` 用于参数验证。
 - [ ] 我知道 Client RPC 只在"拥有者客户端"上执行。
 - [ ] 我知道 NetMulticast RPC 只能从服务器调用。
 - [ ] 我能说出 Reliable 和 Unreliable 各自的适用场景和原因。

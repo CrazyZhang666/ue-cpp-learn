@@ -22,7 +22,7 @@
 第1章 环境搭建          ▏ 1天  ▏ 装好UE5和VS，跑通第一个项目
 第2章 C++基础速览       ▏ 3天  ▏ 变量→函数→类→指针→STL
 第3章 UE5 C++核心概念   ▏ 2天  ▏ UCLASS/UPPROPERTY/UFUNCTION
-第4章 Actor与Component  ▏ 2天  ▏ 理解UE的"一切皆Actor"
+第4章 Actor与Component  ▏ 2天  ▏ 理解UE中可放进关卡的对象与组件
 第5章 内存管理          ▏ 1天  ▏ 垃圾回收与智能指针
 第6章 蓝图与CPP交互     ▏ 2天  ▏ 蓝图和C++混合开发
 第7章 输入系统          ▏ 1天  ▏ Enhanced Input处理玩家输入
@@ -57,6 +57,18 @@ XX-章节名/
 ---
 
 ## 如何使用本手册
+
+### 遇到长章节时怎么读
+
+从第8章开始，部分章节会进入UI、网络、GAS、性能优化和项目实战，单个文件会很长。新手不要试图第一遍记住所有API，按下面的顺序读：
+
+1. **先看目标和架构图**：知道本节在解决什么问题。
+2. **再看文件清单**：知道哪些文件是新建，哪些文件是修改。
+3. **代码第一遍只照抄能跑通**：先不要逐字背API。
+4. **跑通后再回来看解释**：重点理解对象之间怎么连接。
+5. **最后看检查清单**：能说出每个类负责什么，就可以进入下一节。
+
+> **新手判断标准**：第一次学习时，能跑通案例并说出“大概流程”就合格；具体函数名、宏参数和边界条件可以在第二遍学习时再补。
 
 ### 如果你是完全零基础
 
@@ -108,7 +120,7 @@ public:
 // ❌ 错误示例 — 用 ❌ 标记，提醒你这是常见错误
 class AMyActor : public AActor  // 缺少 UCLASS 和 GENERATED_BODY
 {
-    float Health;  // 缺少 UPROPERTY，会被垃圾回收！
+    float Health;  // 缺少 UPROPERTY，编辑器/蓝图/序列化系统看不到它
 };
 ```
 
@@ -118,9 +130,9 @@ class AMyActor : public AActor  // 缺少 UCLASS 和 GENERATED_BODY
 
 | 软件          | 版本        | 说明                  |
 | ------------- | ----------- | --------------------- |
-| Unreal Engine | 5.4+        | 推荐5.4或5.5          |
-| Visual Studio | 2022        | 必须，Community版免费 |
-| Windows SDK   | 10.0.20348+ | VS2022自带            |
+| Unreal Engine | 5.4+        | 推荐使用当前稳定版    |
+| Visual Studio | 2022        | 本教程以它为准，Community版免费 |
+| Windows SDK   | 按UE版本要求 | VS2022安装器中勾选    |
 | Git           | 任意版本    | 可选，用于版本控制    |
 
 ---
@@ -131,7 +143,7 @@ class AMyActor : public AActor  // 缺少 UCLASS 和 GENERATED_BODY
 A: 最低要求16GB内存、4核CPU、GTX1060。低于此配置跑UE编辑器会很痛苦，建议先升级硬件。
 
 **Q: 一定要用Visual Studio吗？**
-A: 是的，UE5在Windows上只能用VS2022编译。可以换Rider去提升开发体验，但不在本手册范围。
+A: 本手册在Windows上以Visual Studio 2022和MSVC工具链为准，因为这是最容易跟着排错的配置。Rider可以作为IDE使用，但底层仍需要安装UE要求的MSVC/Windows SDK工具链。
 
 **Q: 为什么不教蓝图？**
 A: 蓝图在第6章会涉及（因为要和C++交互），但本手册聚焦C++。实际工作中蓝图和C++都重要，建议额外学习蓝图。
