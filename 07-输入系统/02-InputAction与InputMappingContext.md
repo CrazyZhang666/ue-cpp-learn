@@ -1,6 +1,6 @@
 # 7.2 InputAction 与 InputMappingContext
 
-> **目标**：深入理解InputAction和InputMappingContext这两个核心数据资产，学会在编辑器中创建和配置它们。
+> **目标**：理解InputAction和InputMappingContext这两个核心数据资产，学会在编辑器中创建和配置它们。
 
 ---
 

@@ -1,6 +1,6 @@
 # 13.2 AbilitySystemComponent (ASC)
 
-> **目标**：深入理解GAS的大脑——AbilitySystemComponent的创建、配置、放置策略和核心API。
+> **目标**：理解GAS的大脑——AbilitySystemComponent的创建、配置、放置策略和核心API。
 
 ---
 
@@ -30,11 +30,11 @@
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-`UAbilitySystemComponent` 继承自 `UActorComponent`，这意味着它是一个Actor上的组件。任何一个想要参与GAS系统的Actor（玩家角色、敌人、NPC等），都需要拥有一个ASC。
+`UAbilitySystemComponent` 继承自 `UActorComponent`，它是Actor上的一个组件。任何一个想要参与GAS系统的Actor（玩家角色、敌人、NPC等），都需要拥有一个ASC。
 
 ---
 
-## ASC应该放在哪里——最重要的架构决策
+## ASC应该放在哪里——重要的架构决策
 
 这是GAS学习中最关键、也最容易出错的架构决策之一。ASC放在哪里决定了你的项目架构是否合理、网络同步是否正确。
 
@@ -1024,4 +1024,4 @@ void DebugPrintASCInfo(UAbilitySystemComponent* ASC)
 
 ---
 
-> **下一节**：[13.3 GameplayAbility](./03-GameplayAbility.md) — 深入技能的定义和生命周期
+> **下一节**：[13.3 GameplayAbility](./03-GameplayAbility.md) — 技能的定义和生命周期

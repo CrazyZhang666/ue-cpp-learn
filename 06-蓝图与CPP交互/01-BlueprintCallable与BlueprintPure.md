@@ -1,6 +1,6 @@
 # 6.1 BlueprintCallable 与 BlueprintPure
 
-> **目标**：彻底掌握如何让蓝图调用C++函数，理解BlueprintCallable和BlueprintPure的核心区别，学会函数参数传递的正确方式。
+> **目标**：掌握如何让蓝图调用C++函数，理解BlueprintCallable和BlueprintPure的核心区别，学会函数参数传递的正确方式。
 
 ---
 
@@ -98,7 +98,7 @@ void AMyActor::TakeDamage(float DamageAmount)
 
 ### 2.1 什么是 BlueprintPure？
 
-`BlueprintPure` 声明一个**纯函数**——在蓝图中表现为**没有执行引脚的绿色节点**。它只能读取数据、计算并返回值，**绝对不能修改任何成员变量的状态**。
+`BlueprintPure` 声明一个**纯函数**，在蓝图中表现为**没有执行引脚的绿色节点**。它只能读取数据、计算并返回值，**绝对不能修改任何成员变量的状态**。
 
 ```cpp
 // .h 头文件
@@ -455,7 +455,7 @@ const FVector& GetCalculatedPosition() const
 
 ### 6.1 为什么需要规范 Category？
 
-Category 不只是让函数在蓝图右键菜单里好看——它是代码组织的重要方式。一个团队项目可能有几百个 BlueprintCallable 函数，没有规范的 Category 分类会让蓝图调用者难以找到需要的函数。
+Category 不只是让函数在蓝图菜单里好看，更是代码组织的重要方式。一个团队项目可能有几百个 BlueprintCallable 函数，没有规范的 Category 分类会让蓝图调用者难以找到需要的函数。
 
 ### 6.2 推荐的 Category 命名规范
 

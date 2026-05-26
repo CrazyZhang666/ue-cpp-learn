@@ -185,7 +185,7 @@ UE的GC使用**标记-清除（Mark and Sweep）**算法：
    没有UPROPERTY = 可能不可达 = 可能被回收！
 ```
 
-> **黄金法则**：如果你的UObject指针没有 `UPROPERTY()` 保护，它就是GC的猎物！
+> 如果你的UObject指针没有 `UPROPERTY()` 保护，它就是GC的猎物。
 
 ---
 

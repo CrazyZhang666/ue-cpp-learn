@@ -1,6 +1,6 @@
 # 6.2 BlueprintImplementableEvent 与 BlueprintNativeEvent
 
-> **目标**：彻底掌握两种"C++定义签名、蓝图实现逻辑"的函数类型，理解 \_Implementation 后缀的规则，学会根据项目需求选择正确的事件类型。
+> **目标**：掌握两种"C++定义签名、蓝图实现逻辑"的函数类型，理解 \_Implementation 后缀的规则，学会根据项目需求选择正确的事件类型。
 
 ---
 
@@ -415,7 +415,7 @@ void AMyCharacter::PlayHitReaction_Implementation(FVector HitLocation, float Dam
 
 ### 3.6 在蓝图中覆写时调用父类实现
 
-这是一个常见的模式——蓝图中做点额外的事，但核心逻辑还是交给C++默认实现：
+这是一个常见模式：蓝图中做点额外的事，核心逻辑交给C++默认实现：
 
 ```cpp
 // C++ 默认实现：播放基础受击动画

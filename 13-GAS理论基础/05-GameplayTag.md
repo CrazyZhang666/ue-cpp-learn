@@ -1,6 +1,6 @@
 # 13.5 GameplayTag (GT)
 
-> **目标**：深入理解GameplayTag的层级设计、实用技巧和最佳实践。掌握标签的创建、使用和查询。
+> **目标**：理解GameplayTag的层级设计、实用技巧和最佳实践。掌握标签的创建、使用和查询。
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 为什么用GameplayTag而不是bool或Enum？
 
-这是GAS设计中最深刻的思想之一。让我们逐步理解。
+这是GAS设计中一个很深刻的思想。我们逐步理解。
 
 ### 问题演进
 
@@ -129,7 +129,7 @@ CC_Container.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CC.Silence")))
 
 ## 标签的层级匹配机制
 
-这是GameplayTag最核心的特性。理解它需要仔细看下面的例子：
+这是GameplayTag的核心特性。理解它需要仔细看下面的例子：
 
 ```
 ┌───────────────────────────────────────────────────────────────────┐
@@ -688,4 +688,4 @@ else if (ASC->HasMatchingGameplayTag(State_Invincible)) { ... }
 
 ---
 
-> **下一节**：[13.6 AttributeSet](./06-AttributeSet.md) — 深入属性集的定义和属性变化回调
+> **下一节**：[13.6 AttributeSet](./06-AttributeSet.md) — 属性集的定义和属性变化回调

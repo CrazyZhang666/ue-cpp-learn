@@ -6,7 +6,7 @@
 
 ## 什么是AActor？
 
-`AActor` 是UE中**可以在场景（World）中存在、有Transform（位置/旋转/缩放）的所有物体的基类**。你在游戏世界里看到的、碰撞到的、与之交互的一切——从一棵树到玩家角色，从一盏灯到一个触发区域——都派生自 `AActor`。
+`AActor` 是UE中**可以在场景（World）中存在、有Transform（位置/旋转/缩放）的所有物体的基类**。你在游戏世界里看到的、碰撞到的、与之交互的一切，从一棵树到玩家角色，从一盏灯到一个触发区域，都派生自 `AActor`。
 
 ```
 游戏世界中的一切
@@ -965,4 +965,4 @@ void ADisplayItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 ---
 
-> **下一节**：[4.2 Component体系](./02-Component体系.md) — 深入理解Actor中的组件系统，学习如何用组件组合出复杂的功能。
+> **下一节**：[4.2 Component体系](./02-Component体系.md) — 了解Actor中的组件系统，学习如何用组件组合出复杂的功能。

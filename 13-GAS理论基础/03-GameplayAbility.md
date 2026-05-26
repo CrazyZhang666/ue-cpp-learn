@@ -1,6 +1,6 @@
 # 13.3 GameplayAbility (GA)
 
-> **目标**：全面掌握技能类GameplayAbility的创建、生命周期、标签配置和实例化策略。
+> **目标**：掌握技能类GameplayAbility的创建、生命周期、标签配置和实例化策略。
 
 ---
 
@@ -385,7 +385,7 @@ void UMyFireballAbility::SpawnFireball()
 
 ## 技能标签——六种标签配置详解
 
-这是GA中使用GameplayTag最多的部分。理解每种标签的作用对于设计技能系统至关重要。
+这是GA中使用GameplayTag最多的部分。理解每种标签的作用是设计技能系统的关键。
 
 ```
 ┌───────────────────────────────────────────────────────────────────┐
@@ -1207,4 +1207,4 @@ void UMyAbility::ActivateAbility(...)
 
 ---
 
-> **下一节**：[13.4 GameplayEffect](./04-GameplayEffect.md) — 深入效果的配方和执行机制
+> **下一节**：[13.4 GameplayEffect](./04-GameplayEffect.md) — 效果的配方和执行机制

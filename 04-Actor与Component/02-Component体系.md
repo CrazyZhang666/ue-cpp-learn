@@ -285,7 +285,7 @@ CompB->GetAttachParent();                 // 获取父组件
 
 ## UPrimitiveComponent — 可渲染和碰撞的组件
 
-`UPrimitiveComponent` 继承自 `USceneComponent`，是最重要的组件类型——它在空间中有Transform，可以被渲染（看得见），也可以参与物理碰撞（碰得到）。
+`UPrimitiveComponent` 继承自 `USceneComponent`，是最常用的组件类型，在空间中有Transform，可以被渲染（看得见），也可以参与物理碰撞（碰得到）。
 
 ```cpp
 // UPrimitiveComponent 的核心能力

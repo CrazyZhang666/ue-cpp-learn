@@ -1,6 +1,6 @@
 # 3.4 UFUNCTION 详解
 
-> **目标**：全面掌握UFUNCTION的说明符，理解蓝图如何调用C++函数，C++如何调用蓝图事件。
+> **目标**：掌握UFUNCTION的说明符，理解蓝图如何调用C++函数，C++如何调用蓝图事件。
 
 ---
 
@@ -16,7 +16,7 @@ UFUNCTION(BlueprintCallable)
 void TakeDamage(float Amount);  // 蓝图可以调用了！
 ```
 
-UFUNCTION让UE的反射系统知道这个函数，从而赋予它额外的"超能力"。
+UFUNCTION让UE的反射系统知道这个函数，给了它额外的"超能力"。
 
 ---
 
@@ -220,7 +220,7 @@ void AMyCharacter::DebugResetHealth()
 }
 ```
 
-这在调试时非常有用——改代码后不用运行游戏就能测试函数。
+这在调试时非常有用：改代码后不用运行游戏就能测试函数。
 
 ---
 

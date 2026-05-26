@@ -1,6 +1,6 @@
 # 8.2 C++创建与使用Widget
 
-> **目标**：掌握在C++中创建、显示、隐藏和销毁Widget的全部流程。
+> **目标**：学会在C++中创建、显示、隐藏和销毁Widget的完整流程。
 
 ---
 
@@ -271,7 +271,7 @@ void UMyWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 ### 3.1 什么是BindWidget
 
-**一句话理解：** `BindWidget` 让你在C++代码中声明一个"占位符"，然后UE会自动把蓝图中同名的控件"对号入座"赋值给这个占位符。
+**一句话理解：** `BindWidget` 让你在C++代码中声明一个"占位符"，UE会自动把蓝图中同名的控件"对号入座"赋值给这个占位符。
 
 ```
 C++代码中声明：
@@ -343,7 +343,7 @@ public:
 };
 ```
 
-**关键规则（非常重要！）：**
+**关键规则：**
 
 ```
 ✅ C++变量名 == 蓝图控件名（大小写敏感！必须完全一致）
@@ -575,7 +575,7 @@ UUserWidget* GenericWidget = CreateWidget<UUserWidget>(GetWorld(), MainHUDClass)
 
 ### 5.1 AddToViewport：让Widget显示在屏幕上
 
-**一句话理解：** `CreateWidget` 只是把Widget"制造"出来，但还没有"放"到屏幕上。`AddToViewport` 就是把这个制造好的Widget放到屏幕上让玩家看见。
+**一句话理解：** `CreateWidget` 只是把Widget"制造"出来，还没有"放"到屏幕上。`AddToViewport` 把这个制造好的Widget放到屏幕上让玩家看见。
 
 ```cpp
 // 创建 + 添加到屏幕的两步走
@@ -674,7 +674,7 @@ void AMyPlayerController::BeginPlay()
 
 ### 6.1 RemoveFromParent：从屏幕上移除Widget
 
-**一句话理解：** `RemoveFromParent()` 就是把Widget从屏幕上"拿下来"，让它不再显示。
+**一句话理解：** `RemoveFromParent()` 把Widget从屏幕上"拿下来"，让它不再显示。
 
 ```cpp
 // 移除Widget（不再显示，但Widget对象还在内存中）
@@ -683,7 +683,7 @@ MyWidget->RemoveFromParent();
 
 ### 6.2 RemoveFromParent 和 销毁 的区别
 
-这是一个非常重要的概念！新手经常搞混：
+新手经常搞混这个概念：
 
 ```cpp
 // ==================== RemoveFromParent ====================
@@ -845,7 +845,7 @@ void AMyPlayerController::HideHUD()
 
 ### 7.2 SetVisibility：临时显示/隐藏
 
-**一句话理解：** 不同于 `RemoveFromParent`（拿下来），`SetVisibility` 只是让Widget"透明看不见"，但它还在原来的位置上。
+**一句话理解：** 不同于 `RemoveFromParent`（拿下来），`SetVisibility` 只是让Widget"透明看不见"，但它还在原来的位置上。所以它适合频繁开关的场景。
 
 ```cpp
 // ==================== SetVisibility的用法 ====================
@@ -868,7 +868,7 @@ MyWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 ### 7.3 ESlateVisibility 各状态详解
 
-这是一个非常容易混淆的概念，让我用表格清晰说明：
+这个容易混淆，用表格说明：
 
 | 枚举值                 | 是否可见 | 是否占据空间 | 能否交互（点击）                 | 典型用途                   |
 | ---------------------- | -------- | ------------ | -------------------------------- | -------------------------- |
@@ -954,7 +954,7 @@ bool UInventoryWidget::IsInventoryOpen() const
 
 ### 8.1 什么是HUD
 
-**HUD（Heads-Up Display）** 就是游戏过程中一直显示在屏幕上的界面元素——血条、弹药数、小地图、准星等。
+**HUD（Heads-Up Display）** 是游戏过程中一直显示在屏幕上的界面元素，如血条、弹药数、小地图、准星等。
 
 > "HUD" 这个词来源于战斗机飞行员抬头就能看到仪表盘的设计。
 
@@ -1644,7 +1644,7 @@ PauseMenuWidget->AddToViewport(UIZOrder::Menu);       // ZOrder = 80
 
 ## 本章总结
 
-恭喜你完成了C++创建与使用Widget的学习！现在你应该能够：
+到这里，你应该已经能够：
 
 1. 创建继承自UUserWidget的C++类
 2. 使用BindWidget将C++变量绑定到蓝图中的控件
@@ -1654,4 +1654,4 @@ PauseMenuWidget->AddToViewport(UIZOrder::Menu);       // ZOrder = 80
 6. 完成创建HUD的完整流程（从C++类到编辑器布局）
 7. 管理多个Widget的创建、显示、隐藏和销毁
 
-**下一步：** 进入 [03-数据绑定与事件](./03-数据绑定与事件.md)，学习如何在C++中处理按钮点击、属性绑定和输入模式切换！
+**下一步：** [03-数据绑定与事件](./03-数据绑定与事件.md) —— 如何在C++中处理按钮点击、属性绑定和输入模式切换。

@@ -1,6 +1,6 @@
 # 8.1 UMG基础
 
-> **目标**：理解UMG的核心概念，掌握Widget Blueprint的基本操作，熟悉各种UI容器和控件。
+> **目标**：了解UMG的核心概念，学会Widget Blueprint的基本操作，熟悉各种UI容器和控件。
 
 ---
 
@@ -77,7 +77,7 @@
 
 ### 2.1 UserWidget是什么
 
-`UserWidget` 是UE中所有UI界面的"基类"——它就像是UI的"蓝图"。每一个游戏界面（主菜单、背包、HUD等）都是一个继承自 `UUserWidget` 的类。
+`UserWidget` 是UE中所有UI界面的"基类"，它就像是UI的"蓝图"。每一个游戏界面（主菜单、背包、HUD等）都是一个继承自 `UUserWidget` 的类。
 
 ```
 你创建一个游戏界面
@@ -92,7 +92,7 @@
 
 ### 2.2 UserWidget的生命周期
 
-理解Widget的生命周期非常重要，因为很多新手在此犯错：
+理解Widget的生命周期很关键，很多新手在此犯错：
 
 ```
 1. Construct()          ← Widget被创建时调用（蓝图层面）
@@ -240,7 +240,7 @@
 
 ## 4. 容器面板详解
 
-> 容器（Panel）是用来"装"其他控件的控件。它们是UI布局的核心。
+> 容器（Panel）是用来"装"其他控件的控件，是UI布局的基础。
 
 ### 4.1 CanvasPanel（画布面板）
 
@@ -1002,7 +1002,7 @@ DPI缩放就是解决这个问题的！让UI在任何屏幕上看起来大小都
 
 ```
 DPI Scale Rule: Shortest Side
-→ 这意味着以1080p（1920x1080，短边1080）为基准
+→ 以1080p（1920x1080，短边1080）为基准
 → 在720p屏幕上，UI会等比缩小
 → 在4K屏幕上，UI会等比放大
 ```
@@ -1067,9 +1067,9 @@ float AdjustedSize = BaseSize * DPIScale;
 
 ## 本章总结
 
-恭喜你完成了UMG基础的学习！现在你应该能够：
+到这里，你应该已经能够：
 
-1. 理解UMG是什么以及它在UE中的定位
+1. 知道UMG是什么以及它在UE中的定位
 2. 在编辑器中创建和管理Widget Blueprint
 3. 使用各种容器（CanvasPanel、HorizontalBox、VerticalBox、Overlay等）进行布局
 4. 使用基础控件（Button、TextBlock、Image、ProgressBar等）构建界面
@@ -1077,4 +1077,4 @@ float AdjustedSize = BaseSize * DPIScale;
 6. 管理控件的显示层级（ZOrder）
 7. 处理不同屏幕分辨率的DPI缩放
 
-**下一步：** 进入 [02-CPP创建与使用Widget](./02-CPP创建与使用Widget.md)，学习如何在C++代码中创建和控制UI界面！
+**下一步：** [02-CPP创建与使用Widget](./02-CPP创建与使用Widget.md) —— 如何在C++代码中创建和控制UI界面。
